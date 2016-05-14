@@ -41,14 +41,17 @@ angular.module('myapp',[])
 	$scope.CurrentPrice=!window.localStorage.getItem('CurrentPrice') ? 0 : window.localStorage.getItem('CurrentPrice');
 	$scope.ExchangeRate=!window.localStorage.getItem('ExchangeRate') ? 0 : JSON.parse(window.localStorage.getItem('ExchangeRate'))[0].Rate;//固定值
 	$scope.ExchangeRateCny=!window.localStorage.getItem('ExchangeRate') ? 0 : JSON.parse(window.localStorage.getItem('ExchangeRate'))[1].Rate;//固定值
+	$scope.slidertime=!window.localStorage.getItem('slidertime') ? 0 : JSON.parse(window.localStorage.getItem('slidertime'));;
 	$scope.showctrl=true;
 	$scope.showctrl2=false;
+	$scope.todayTime=new Date();
 	$scope.TotalValue=0;
 	$scope.Current=0;
 	$scope.TotalValueCny = 0;
 	$scope.CurrentCny = 0;
-	
 	$scope.dataList=$scope.dataList1;
+	$scope.slider=0;
+	$scope.silderBtn=!window.localStorage.getItem('dataList')? false : JSON.parse(window.localStorage.getItem('dataList')).length==0 ? false : true;
 	dataValue.getCurrentPrice().then(function(data){
 		window.localStorage.setItem('CurrentPrice',data);
 	})
@@ -56,6 +59,10 @@ angular.module('myapp',[])
 	dataValue.getExchange().then(function(data){
 		window.localStorage.setItem('ExchangeRate',JSON.stringify(data));
 	})
+	
+	$scope.endTime=function(time){
+		$scope.data.expiration=new Date(time.getFullYear()+10,time.getMonth(),time.getDate());
+	}
 	
 	var time=null,i=0;
 	/*检查异步数据请求数据是否完成*/
@@ -76,28 +83,13 @@ angular.module('myapp',[])
 		})
 	},100)
 	
-	/*日历*/
-	$('#datepicker').datepicker().on('changeDate', function(ev){
-			$scope.begin=$('#datepicker').val()
-	});
-	$('#expiration').datepicker().on('changeDate', function(ev){
-			$scope.expiration=$('#expiration').val()
-	});
-	
-	/*添加一行数据*/
-	$scope.add=function(begin,expiration,data){
-		 var list={};
 
-		 var bn=[begin,expiration,data.quantity,data.exercise].some(function(item){
-			return item == null;
-		 })
-		if(bn){
-			alert('请填写正确信息'); 
-			return;
-		}
+	/*添加一行数据*/
+	$scope.add=function(data){
+		 var list={};
 		/*TotalValue数据处理*/ 
-		list.begin=new Date(begin.substring(6,11), check(begin.substring(0,2))-1,check(begin.substring(3,5)));
-		list.expiration=new Date(expiration.substring(6,11), check(expiration.substring(0,2))-1,check(expiration.substring(3,5)));
+		list.begin=data.begin;
+		list.expiration=data.begin;
 		list.quantity=data.quantity;
 		list.exercise=data.exercise;
 		list.stage1=new Date(list.begin.getTime()+31536000000);
@@ -110,11 +102,48 @@ angular.module('myapp',[])
 		/*计算TotalValue值	计算currentValue的值*/ 
 		/*监控数据变化，及时展现到页面*/ 
 		$timeout(watchvalue,100);
+		$scope.silderBtn=true;
 	 }
-
+	function slideTime(){
+		var startTime=new Date();
+		var endTime=new Date(Number(window.localStorage.getItem("slidertime")));
+		var mouthSize=(endTime.getFullYear()-startTime.getFullYear())*12+(endTime.getMonth()-startTime.getMonth()
+							)+(endTime.getDate()-startTime.getDate()<0?0:1);	
+		return mouthSize;
+	}
+	$( "#slider" ).slider({
+		  min: 0,
+		  value:0,
+		  max: slideTime(),
+		  slide: function( event, ui ) {
+			  var startTime=new Date();
+			  var endTime=new Date(startTime.getFullYear()+parseInt((startTime.getMonth()+ui.value)/12),(startTime.getMonth()+ui.value)%12,startTime.getDate()).getTime();
+			  
+			  $scope.slider=ui.value;
+			  $scope.$apply(function(){
+				var num=0; 
+				angular.forEach($scope.dataList,function(ele,index){
+					num=numAdd(numMulti(selectTime2(endTime,ele.begin),ele.total),num);
+				})
+				$scope.Current=num;				
+				$scope.CurrentCny=numMulti($scope.Current,$scope.ExchangeRateCny).toFixed(2);
+				if(ui.value==slideTime()){
+				  var t=new Date(Number(window.localStorage.getItem("slidertime")));
+				  $scope.todayTime=t;
+			    }else{
+				  $scope.todayTime=endTime;
+			    }
+			  })
+			
+		  }
+    });
+	
 	/*删除一条信息*/
 	$scope.del=function(index){
 		$scope.dataList1.splice(index,1);
+		if($scope.dataList1.length==0){
+			$scope.silderBtn=false;
+		}
 		window.localStorage.setItem('dataList',angular.toJson($scope.dataList1));
 		/*计算TotalValue值	计算currentValue的值*/ 
 		/*监控数据变化，及时展现到页面*/ 
@@ -150,24 +179,75 @@ angular.module('myapp',[])
 	/*监控数据变化函数，及时展现到页面*/ 
 	function watchvalue(){
 		var num=0,num2=0;
+		$scope.slidertime=0;
 		$scope.$watch('dataList1',function(n,o){
 			angular.forEach(n,function(ele,index){
 				num2=numAdd(numMulti(selectTime(ele.begin),ele.total),num2);
 				num=numAdd(num,ele.total);
+				$scope.slidertime=$scope.slidertime<=new Date(ele.stage4).getTime()?new Date(ele.stage4).getTime():$scope.slidertime;
 			})
+			if(n.length==0){
+				$scope.slidertime=0;
+			}
+			window.localStorage.setItem('slidertime',$scope.slidertime);
 			$scope.TotalValue=num;
 			$scope.Current=num2;
 			$scope.TotalValueCny =numMulti($scope.TotalValue,$scope.ExchangeRateCny).toFixed(2);
 			$scope.CurrentCny=numMulti($scope.Current,$scope.ExchangeRateCny).toFixed(2);
+			$( "#slider" ).slider( "option", "max", slideTime());
+			$( "#slider" ).slider( "option", "value",0);
 		})
 	 }
 
+	function watchSlider(timestr){
+		console.log($scope.slider)
+		$scope.$watch('slider',function(n,o){
+		var num=0; 
+		angular.forEach($scope.dataList,function(ele,index){
+			num=numAdd(numMulti(selectTime2(timestr),ele.total),num);
+		})
+		$scope.Current=num;				
+		$scope.CurrentCny=numMulti($scope.Current,$scope.ExchangeRateCny).toFixed(2);
+		})
+	 }
 	/*判断当前的时间处于哪个阶段*/
-	function selectTime(time){
-
-		var stageTime=new Date(time).getTime(),
+	function selectTime(timeValue){
+		var stageTime=new Date(timeValue).getTime(),
 			x,
 			timeDifference=new Date().getTime()-stageTime,
+			/*1年时间*/
+			stage1=31536000000,
+			stage2=63072000000,
+			stage3=94608000000,
+			stage4=126144000000;
+		if(timeDifference < stage1 ){
+
+			x=0;
+
+		}else if( stage2  > timeDifference   ){
+
+			x = 0.25;
+
+		}else if( stage3  > timeDifference  ){
+
+			x = 0.5;
+
+		}else if( stage4  > timeDifference ){
+
+			x = 0.75;
+
+		}else if(  timeDifference > stage4 ){
+
+			x = 1;
+
+		}
+		return x;
+
+	}
+	function selectTime2(timeValue,time2Value){
+		var stageTime=new Date(timeValue).getTime(),
+			x,
+			timeDifference=stageTime-new Date(time2Value).getTime(),
 			/*1年时间*/
 			stage1=31536000000,
 			stage2=63072000000,
@@ -194,12 +274,12 @@ angular.module('myapp',[])
 
 			x = 1;
 
+		}else{
+			x=1;
 		}
-
 		return x;
 
 	}
-
 	function check(num){
 		var n=num.substring(0,1)>0 ? num : num.substring(1,2);
 		return n;

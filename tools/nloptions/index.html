@@ -4,16 +4,22 @@
   <meta charset="UTF-8">
   <title>Are you in a good mood today?</title>
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+  <link rel="stylesheet" href="bower_components/jquery/jquery-ui.min.css">
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
   <script src="bower_components/angular/angular.min.js"></script>
-  <link rel="stylesheet" href="Datepicker-for-Bootstrap/datepicker.css">
-  <script src="Datepicker-for-Bootstrap/bootstrap-datepicker.js"></script>
+	<script src="bower_components/jquery/jquery-ui.min.js"></script>
 <style>
-	.form-control{width: 140px!important;}
+	.form-control{width: 165px!important;}
 	#CurrentPrice{width: 50px;}
-	 .table th, .table  td { 
-				text-align: center; 
-			}
+	.col-md-8 .table th, .col-md-8 .table  td { 
+		text-align: center; 
+	}
+	.table > tbody > tr > td{
+		vertical-align: middle;
+	}
+	.table > caption + thead > tr:first-child > th, .table > colgroup + thead > tr:first-child > th, .table > thead:first-child > tr:first-child > th, .table > caption + thead > tr:first-child > td, .table > colgroup + thead > tr:first-child > td, .table > thead:first-child > tr:first-child > td{
+		vertical-align: middle;
+	}
 </style>
 </head>
 <body>
@@ -24,37 +30,47 @@
  		 <table class="table">
 				<tbody>
 				  <tr>
-					<td>Current Price (CAD):</td>
+					<td>Current Price <br /> (CAD):</td>
 					<td>
-						<span ng-click="hide()"  ng-show='showctrl' ng-bind="CurrentPrice | curr" >1</span><input id="CurrentPrice" ng-blur="show()" ng-model="CurrentPrice" ng-show='showctrl2' type="text"><i ng-show='showctrl' class="glyphicon glyphicon-pencil" style="color:red;margin-left:5px;"></i>
+						<span ng-click="hide()"  ng-show='showctrl' ng-bind="CurrentPrice | curr" >1</span><input id="CurrentPrice" ng-blur="show()" ng-model="CurrentPrice" ng-show='showctrl2' type="text"><i ng-show='showctrl' class="glyphicon glyphicon-pencil" style="color:red;margin-left:5px;" ng-click="hide()"></i>
 					</td>
 				  </tr>
 				  <tr>
-					<td>Exchange Rate (CAD->USD):</td>
+					<td>Exchange Rate <br /> (CAD->USD):</td>
 					<td ng-bind="ExchangeRate"></td>
 				  </tr>
 				  <tr>
-				  	<td>Converted Price (USD):</td>
+				  	<td>Converted Price <br />  (USD):</td>
 					<td ng-bind="ConvertedPrice | curr"></td>
 				  </tr>
+				  <tr ng-show="silderBtn">
+				  	<td colspan="2">
+					  <p>
+					  	Now Time：<span ng-bind="todayTime | date:'yyyy/MM/dd' "></span>
+					  </p>
+						<div id="slider"></div>
+				  	</td>
+				  </tr>
 				  <tr>
-				  	<td>Total Value (USD):</td>
+				  	<td>Total Value  <br />  (USD):</td>
 					<td ng-bind="TotalValue | curr | currency :'$'"></td>
 				  </tr>
 				  <tr>
-					<td>Current Total Value (USD):</td>
+					<td>Current Total Value  <br />  (USD):</td>
 					<td ng-bind="Current | currency :'$'"></td>
 				  </tr>
 				  <tr>
-					<td>Exchange Rate (USD->CNY):</td>
+					<td>Exchange Rate  <br />  (USD->CNY):</td>
 					<td ng-bind="ExchangeRateCny"></td>
 				  </tr>
 				  <tr>
-				  	<td>Total Value (CNY):</td>
-					<td><strong  ng-bind="TotalValueCny | currency:'￥'"></strong>		</td>
+				  	<td>Total Value  <br />  (CNY):</td>
+					<td>
+						<strong  ng-bind="TotalValueCny | currency:'￥'"></strong>		
+					</td>
 				  </tr>
 				  <tr>
-					<td>Current Total Value (CNY):</td>
+					<td>Current Total Value  <br />  (CNY):</td>
 					<td ng-bind="CurrentCny | currency:'￥'"></td>
 				  </tr>
 				</tbody>
@@ -62,30 +78,26 @@
  		 </div>
 
  		<div class="col-md-8">
- 			<form class="form-inline" ng-submit="add(begin,expiration,data)">
+ 			<form class="form-inline" ng-submit="add(data)">
 			  <div class="form-group">
-                <div class='input-group date' id='datetimepicker1'>
-                    <input type="text" class="form-control" id="datepicker" ng-model="begin" placeholder="Begins Time">
-                </div>
+                    <input required type="date" class="form-control" ng-blur="endTime(data.begin)" ng-model="data.begin" placeholder="Begins Time">
            	  </div> 
                <div class="form-group">
-                <div class='input-group date' id='datetimepicker1'>
-                   	<input type="text" class="form-control" ng-model="expiration" id="expiration" placeholder="Expiration Time">
-                </div>
+                   	<input required type="date" class="form-control" ng-model="data.expiration" placeholder="Expiration Time">
            	  </div>
 			  <div class="form-group">
-				<input type="text" class="form-control" ng-model="data.quantity" placeholder="Quantity">
+				<input required type="number" class="form-control" ng-model="data.quantity" placeholder="Quantity">
 			  </div>
 			  <div class="form-group">
-				<input type="text" class="form-control" ng-model="data.exercise" placeholder="Exercise Price(USD)">
+				<input required type="text" class="form-control" ng-model="data.exercise" placeholder="Exercise Price(USD)">
 			  </div>
-			  <button type="submit" class="btn btn-default">add</button>
+			  <button type="submit" class="btn btn-default">Add</button>
 			</form>
 			<br>
  			<table class="table table-bordered">
 				<thead>
 				  <tr>
-					<th>operation</th>
+					<th>Operation</th>
 					<th>Begins</th>
 					<th>Expiration</th>
 					<th>Quantity</th>
