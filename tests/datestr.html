@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>new Date(dateStr) Compatibility Test</title>
+	<style>
+		body
+		{
+			font-family: arial;
+		}
+		table th
+		{
+			text-align: left;
+		}
+		.support
+		{
+			background-color: #39b54a;
+		}
+		.not-support
+		{
+			background-color: #c44230;
+		}
+	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script>
+		var strArr = [
+			"Jun 1, 2016",
+			"Mon, 25 Dec 1995 13:30:00 GMT",
+			"2016/06/01",
+			"2016/06/01 11:12:30",
+			"2016/06/01T11:12:30",
+			"2016-06-01",  //ISO 8601
+			"2016-06-01 11:12:30",
+			"2016-06-01T11:12:30",
+			"2016-06-01T11:12:30+01:00",  //ISO 8601
+			"2016-06-01T11:12:30Z",  //ISO 8601, Solr
+			"2016-06-01T11:12:30.00+01:00",  //ISO 8601
+			"2016-06-01T11:12:30.00Z",  //ISO 8601
+			"2016-06-01T11:12:30.000"  // NeuLion App Server
+		];
+		$(document).ready(function(){
+			// Test
+			var $testTable = $("#testTable");
+			for (var i = 0; i < strArr.length; i++)
+			{
+				var date = new Date(strArr[i]);
+				var support = date != "Invalid Date";
+				$testTable.append('<tr><td>' + strArr[i] + '</td><td class="' + (support ? "support" : "not-support") + '">&nbsp;</td></tr>');
+			}
+			
+			// Report
+			var result = [
+				{
+					"name": "Chrome 52",
+					"testCase": [1,1,1,1,0,1,1,1,1,1,1,1,1]
+				},
+				{
+					"name": "Firefox 47",
+					"testCase": [1,1,1,1,0,1,1,1,1,1,1,1,1]
+				},
+				{
+					"name": "IE Edge",
+					"testCase": [1,1,1,1,1,1,1,1,1,1,1,1,1]
+				},
+				{
+					"name": "IE 11",
+					"testCase": [1,1,1,1,1,1,0,1,1,1,1,1,1]
+				},
+				{
+					"name": "IE 10",
+					"testCase": [1,1,1,1,0,1,0,1,1,1,1,1,1]
+				},
+				{
+					"name": "IE 9",
+					"testCase": [1,1,1,1,0,1,0,1,1,1,1,1,1]
+				},
+				{
+					"name": "IE 8",
+					"testCase": [1,1,1,1,0,1,1,1,1,1,1,1,1]
+				},
+				{
+					"name": "Opera 39",
+					"testCase": [1,1,1,1,0,1,1,1,1,1,1,1,1]
+				},
+				{
+					"name": "Safari 5.1.7(Windows)",
+					"testCase": [1,1,1,1,0,0,0,0,1,1,1,1,0]
+				},
+				{
+					"name": "Safari 9.1.2 (Mac)",
+					"testCase": [1,1,1,1,0,1,0,1,1,1,1,1,1]
+				},
+				{
+					"name": "Safari (iOS)",
+					"testCase": [1,1,1,1,0,1,0,1,1,1,1,1,1]
+				},
+				{
+					"name": "Chrome (iOS)",
+					"testCase": [1,1,1,1,0,1,0,1,1,1,1,1,1]
+				},
+				{
+					"name": "Chrome on Nexus (Android)",
+					"testCase": [1,1,1,1,0,1,1,1,1,1,1,1,1]
+				},
+				{
+					"name": "Default Browser on XiaoMi (Android)",
+					"testCase": [1,1,1,1,0,1,1,1,1,1,1,1,1]
+				}
+			];
+			var $reportTable = $("#reportTable");
+			var label = "";
+			for (var i = 0; i < result.length; i++)
+			{
+				label += '<th>' + result[i].name + '</th>';
+			}
+			$reportTable.find("tr").append(label);
+
+			for (var i = 0; i < strArr.length; i++)
+			{
+				var row = '<tr><td>' + strArr[i] + '</td>';
+				for (var j = 0; j < result.length; j++)
+				{
+					row += '<td class="' + (result[j].testCase[i] ? "support" : "not-support") + '">&nbsp;</td>';
+				}
+				row += '</td>';
+				$reportTable.append(row);
+			}
+		});
+	</script>
+</head>
+<body>
+<h1>Javascript: new Date(dateStr) Browser Compatibility Test</h1>
+<h2>Your Browser:</h2>
+<table id="testTable" border="1">
+	<tr><th>Date Str</th><th>Result</th></tr>
+</table>
+<h2>Browser Compatible:</h2>
+<table id="reportTable" border="1">
+	<tr><th>dateStr</th></tr>
+</table>
+</body>
+</html>
