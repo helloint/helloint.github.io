@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>EPGList: jQuery Plugin</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script src="scripts/util.js"></script>
+	<script src="scripts/demo6.js"></script>
+	<script>
+	  function playProgram(program)
+	  {
+		  alert("Seeking Program..." + program.startTime);
+	  }
+	  window.onload = function ()
+	  {
+		  var $epgList = $(".epgContainer").epgList({
+			  onPlayCallback: playProgram
+		  }).data("epgList");
+	  }
+	</script>
+</head>
+<body>
+<div id="epgContainer" class="epgContainer">
+</div>
+<div id="epgContainer2" class="epgContainer">
+</div>
+</body>
+</html>

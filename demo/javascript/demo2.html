@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>EPGList: Plain JavaScript with external html template</title>
+	<script src="scripts/util.js"></script>
+	<script src="scripts/demo2.js"></script>
+	<script>
+	  function playProgram(startTime)
+	  {
+		  alert("Seeking Program...");
+	  }
+	  window.onload = function ()
+	  {
+		  // Entry
+		  loadEPGFeed();
+	  }
+	</script>
+</head>
+<body>
+<div id="epgContainer">
+	<!--
+	<ul>
+		<li class="item">
+			<div class="title">Brazilian League 2017: CORINTHIANS v FLAMENGO</div>
+			<a href="javascript:void(0);">Play</a>
+		</li>
+	</ul>
+	-->
+</div>
+</body>
+</html>

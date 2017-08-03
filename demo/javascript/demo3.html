@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>EPGList: Plain JavaScript with Handlebars</title>
+	<script src="scripts/util.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.10/handlebars.min.js"></script>
+	<script src="scripts/demo3.js"></script>
+	<script>
+	  function playProgram(startTime)
+	  {
+		  alert("Seeking Program...");
+	  }
+	  window.onload = function ()
+	  {
+		  // Entry
+		  loadEPGFeed();
+	  }
+	</script>
+</head>
+<body>
+<div id="epgContainer"></div>
+<script id="epgTemplate" type="text/x-handlebars-template">
+	<ul>
+		{{#each epgArr}}
+		<li class="item">
+			<div class="title">{{title}}</div>
+			<a href="javascript:onPlayClick('{{startTime}}');">Play</a>
+		</li>
+		{{/each}}
+	</ul>
+</script>
+</body>
+</html>
