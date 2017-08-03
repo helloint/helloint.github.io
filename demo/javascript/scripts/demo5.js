@@ -1,7 +1,6 @@
 // EPG List
 function EPGList(domId, options)
 {
-	var epgFeed = "https://neulionsmbnyc-a.akamaihd.net/u/mt1/elevensportssg/epg/eleven/2017/08/02.js";
 	var epgTemplate = '<li class="item">'
 			+ '  <div class="title">{{title}}</div>'
 			+ '  <a href="javascript:void(0);" class="play" data-starttime="{{startTime}}">Play</a>'
@@ -11,6 +10,7 @@ function EPGList(domId, options)
 
 	function loadEPGFeed()
 	{
+		var epgFeed = options.epgFeed.replace("{date}", formatDate(new Date()));
 		getJSONPFeed(addTimestamp(epgFeed), "handleEPGCallback", handleEPGData);
 	}
 
@@ -47,5 +47,16 @@ function EPGList(domId, options)
 				})(i);
 			}
 		}
+	}
+	
+	// yyyy/MM/dd
+	function formatDate(date)
+	{
+		var year = date.getFullYear();
+		var day = date.getDate();
+		var month = date.getMonth() + 1;
+		day = day < 10 ? "0" + day : day;
+		month = month < 10 ? "0" + month : month;
+		return year + "/" + month + "/" + day;
 	}
 }
