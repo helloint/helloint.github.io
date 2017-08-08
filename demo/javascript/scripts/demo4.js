@@ -1,9 +1,9 @@
 // EPG Component
-var epgList = {
+var EPGList = {
 	domId: null,
 	template: '<li class="item">'
 	+ '  <div class="title">{{title}}</div>'
-	+ '  <a href="javascript:epgList.handlePlayClick(\'{{startTime}}\');">Play</a>'
+	+ '  <a href="javascript:EPGList.handlePlayClick(\'{{startTime}}\');">Play</a>'
 	+ '</li>',
 	onPlayClick: null,
 	
@@ -66,7 +66,9 @@ var epgList = {
 	{
 		if (this.onPlayClick)
 		{
-			this.onPlayClick(startTime);
+			this.onPlayClick({
+				startTime: startTime
+			});
 		}
 	}
 };

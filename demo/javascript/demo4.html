@@ -7,6 +7,7 @@
 	<script src="scripts/config.js"></script>
 	<script src="scripts/util.js"></script>
 	<script src="scripts/demo4.js"></script>
+	<!--<script src="scripts/demo4_1.js"></script>-->
 	<script>
 	  function playProgram(program)
 	  {
@@ -19,14 +20,14 @@
 	    {
 		    if (curIdx >= 0)
 		    {
-		      epgList.setActiveProgram(--curIdx);
+		      EPGList.setActiveProgram(--curIdx);
 		    }
 	    };
 	    document.getElementById("nextProgram").onclick = function ()
 	    {
-		    if (curIdx <= epgList.getProgramLength() - 1)
+		    if (curIdx <= EPGList.getProgramLength() - 1)
 		    {
-		      epgList.setActiveProgram(++curIdx);
+		      EPGList.setActiveProgram(++curIdx);
 		    }
 	    };
     }
@@ -34,9 +35,9 @@
 	<script>
 	  window.onload = function ()
 	  {
-	  	epgList.init("epgContainer", {
+	  	EPGList.init("epgContainer", {
 			  feed: EPG_FEED,
-			  onPlayCallback: playProgram
+				onPlayCallback: playProgram
 		  });
 	    initUIActions();
 	  }
