@@ -6,19 +6,39 @@
 	<script src="scripts/config.js"></script>
 	<script src="scripts/util.js"></script>
 	<script src="scripts/demo1.js"></script>
+	<link rel="stylesheet" href="styles/epg.css">
 	<script>
 	  function playProgram(startTime)
 	  {
 		  alert("Seeking Program...");
 	  }
+
+    var curIdx = -1;
 		window.onload = function ()
 		{
 			// Entry
 			loadEPGFeed();
+			
+			document.getElementById("prevProgram").onclick = function ()
+			{
+		    if (curIdx >= 0)
+		    {
+			    setActiveEPGProgram(--curIdx);
+		    }
+			};
+			document.getElementById("nextProgram").onclick = function ()
+			{
+		    if (curIdx <= getEPGProgramLength() - 1)
+		    {
+		      setActiveEPGProgram(++curIdx);
+		    }
+			};
 		}
 	</script>
 </head>
 <body>
+<input type="button" value="&lt" id="prevProgram"/>
+<input type="button" value="&gt" id="nextProgram"/>
 <div id="epgContainer">
 	<!--
 	<ul>

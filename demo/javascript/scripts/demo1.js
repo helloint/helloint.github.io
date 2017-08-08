@@ -26,6 +26,25 @@ function renderEPGUI(epgArr)
 	var container = document.getElementById("epgContainer");
 	container.innerHTML = epgDom;
 }
+function setActiveEPGProgram(index)
+{
+	var container = document.getElementById("epgContainer");
+	var prevSelectedEl = container.querySelectorAll(".selected");
+	if (prevSelectedEl.length > 0)
+	{
+		removeClass(container.querySelectorAll(".selected")[0], "selected");
+	}
+	var elements = container.querySelectorAll(".item");
+	if (index >= 0 && index < getEPGProgramLength())
+	{
+		addClass(elements[index], "selected");
+	}
+}
+function getEPGProgramLength()
+{
+	var container = document.getElementById("epgContainer");
+	return container.querySelectorAll(".item").length;
+}
 function onPlayClick(startTime)
 {
 	playProgram(startTime);

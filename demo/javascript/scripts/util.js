@@ -1,4 +1,5 @@
 // Utilities
+/* Ajax Operation */
 /**
  * Load a Javascript. This is an alternative of jQuery.getScript in native JavaScript
  * @param url
@@ -114,4 +115,21 @@ function getJSON(url, callback, errCallback)
 function addTimestamp(url, round)
 {
 	return url + (url.indexOf('?') > -1 ? '&' : '?') + 't=' + parseInt(new Date().getTime() / (round ? round * 1000 : 1));
+}
+
+/* Dom Operation */
+function addClass(el, className)
+{
+	if (el.classList)
+		el.classList.add(className);
+	else
+		el.className += ' ' + className;	
+}
+
+function removeClass(el, className)
+{
+	if (el.classList)
+		el.classList.remove(className);
+	else
+		el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');	
 }
