@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>EPGList: jQuery Plugin</title>
+	<script src="scripts/config.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<script src="scripts/util.js"></script>
 	<script src="scripts/demo6.js"></script>
@@ -14,7 +15,8 @@
 	  window.onload = function ()
 	  {
 		  var $epgList = $(".epgContainer").epgList({
-			  onPlayCallback: playProgram
+				  epgFeed: epgFeed,
+				  onPlayCallback: playProgram
 		  }).data("epgList");
 	  }
 	</script>

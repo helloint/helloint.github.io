@@ -1,6 +1,4 @@
 // EPG Component
-var epgFeed = "https://neulionsmbnyc-a.akamaihd.net/u/mt1/elevensportssg/epg/eleven/2017/08/02.js";
-
 function loadEPGFeed()
 {
 	getJSONPFeed(addTimestamp(epgFeed), "handleEPGCallback", handleEPGData);

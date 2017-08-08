@@ -3,7 +3,6 @@
 	// EPG List
 	function EPGList($elem, options)
 	{
-		var epgFeed = "https://neulionsmbnyc-a.akamaihd.net/u/mt1/elevensportssg/epg/eleven/2017/08/02.js";
 		var epgTemplate = '<li class="item">'
 				+ '  <div class="title">{{title}}</div>'
 				+ '  <a href="javascript:void(0);" class="play" data-starttime="{{startTime}}">Play</a>'
