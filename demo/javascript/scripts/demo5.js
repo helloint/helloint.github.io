@@ -7,7 +7,7 @@ function EPGList(domId, options)
 			+ '</li>';
 
 	init();
-	
+
 	function init()
 	{
 		loadEPGFeed();
@@ -45,15 +45,17 @@ function EPGList(domId, options)
 			var anchors = document.getElementById(domId).querySelectorAll(".play");
 			for (var i = 0; i < anchors.length; i++)
 			{
-				(function(i){
-					anchors[i].onclick = function() {
+				(function (i)
+				{
+					anchors[i].onclick = function ()
+					{
 						options.onPlayCallback({startTime: anchors[i].getAttribute('data-starttime')})
 					};
 				})(i);
 			}
 		}
 	}
-	
+
 	// Public APIs
 	this.setActiveProgram = function (index)
 	{
@@ -69,13 +71,13 @@ function EPGList(domId, options)
 			window.addClass(elements[index], "selected");
 		}
 	};
-	
-	this.getProgramLength = function()
+
+	this.getProgramLength = function ()
 	{
 		var container = document.getElementById(domId);
 		return container.querySelectorAll(".item").length;
 	};
-	
+
 	// Utils	
 	// yyyy/MM/dd
 	function formatDate(date)

@@ -1,4 +1,5 @@
-(function(){
+(function ()
+{
 	// EPG List
 	var EPGList = function (domId, options)
 	{
@@ -26,7 +27,8 @@
 		var self = this;
 
 		var epgFeed = this.options.feed.replace("{date}", window.formatDate(new Date()));
-		window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", function(data){
+		window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", function (data)
+		{
 			self.handleEPGData(data);
 		});
 	};
@@ -59,8 +61,10 @@
 			var anchors = document.getElementById(self.domId).querySelectorAll(".play");
 			for (var i = 0; i < anchors.length; i++)
 			{
-				(function(i){
-					anchors[i].onclick = function() {
+				(function (i)
+				{
+					anchors[i].onclick = function ()
+					{
 						self.options.onPlayCallback({startTime: anchors[i].getAttribute('data-starttime')})
 					};
 				})(i);
@@ -84,14 +88,16 @@
 		}
 	};
 
-	EPGList.prototype.getProgramLength = function()
+	EPGList.prototype.getProgramLength = function ()
 	{
 		var container = document.getElementById(this.domId);
 		return container.querySelectorAll(".item").length;
 	};
-	
-	window.EPGListUI = function(){
-		return function (domId, options) {
+
+	window.EPGListUI = function ()
+	{
+		return function (domId, options)
+		{
 			var epgList = new EPGList(domId, options);
 			this.setActiveProgram = function (index)
 			{
@@ -105,7 +111,8 @@
 	}();
 })(window);
 
-(function(){
+(function ()
+{
 	window.EPGListFactory = (function ()
 	{
 		var instance;

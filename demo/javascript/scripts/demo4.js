@@ -6,20 +6,21 @@ var EPGList = {
 	+ '  <a href="javascript:EPGList.handlePlayClick(\'{{startTime}}\');">Play</a>'
 	+ '</li>',
 	onPlayClick: null,
-	
+
 	init: function (domId, options)
 	{
 		this.domId = domId;
 		this.feed = options.feed;
 		this.onPlayClick = options.onPlayCallback;
-		
+
 		this.loadFeed();
 	},
 
-	loadFeed: function()
+	loadFeed: function ()
 	{
 		var self = this;
-		window.getJSONPFeed(window.addTimestamp(this.feed), "handleEPGCallback", function(data){
+		window.getJSONPFeed(window.addTimestamp(this.feed), "handleEPGCallback", function (data)
+		{
 			self.handleData(data);
 		});
 	},
@@ -43,7 +44,7 @@ var EPGList = {
 		var container = document.getElementById(this.domId);
 		container.innerHTML = epgDom;
 	},
-	setActiveProgram: function(index)
+	setActiveProgram: function (index)
 	{
 		var container = document.getElementById(this.domId);
 		var prevSelectedEl = container.querySelectorAll(".selected");
@@ -57,12 +58,12 @@ var EPGList = {
 			window.addClass(elements[index], "selected");
 		}
 	},
-	getProgramLength: function()
+	getProgramLength: function ()
 	{
 		var container = document.getElementById(this.domId);
 		return container.querySelectorAll(".item").length;
 	},
-	handlePlayClick: function(startTime)
+	handlePlayClick: function (startTime)
 	{
 		if (this.onPlayClick)
 		{

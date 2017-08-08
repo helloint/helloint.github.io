@@ -23,9 +23,10 @@ EPGList.prototype._init = function ()
 EPGList.prototype._loadEPGFeed = function ()
 {
 	var self = this;
-	
+
 	var epgFeed = this.options.epgFeed.replace("{date}", window.formatDate(new Date()));
-	window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", function(data){
+	window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", function (data)
+	{
 		self._handleEPGData(data);
 	});
 };
@@ -43,7 +44,7 @@ EPGList.prototype._handleEPGData = function (data)
 EPGList.prototype._renderEPGUI = function (epgArr)
 {
 	var self = this;
-	
+
 	var epgDom = "<ul>";
 	for (var i = 0; i < epgArr.length; i++)
 	{
@@ -58,8 +59,10 @@ EPGList.prototype._renderEPGUI = function (epgArr)
 		var anchors = document.getElementById(self.domId).querySelectorAll(".play");
 		for (var i = 0; i < anchors.length; i++)
 		{
-			(function(i){
-				anchors[i].onclick = function() {
+			(function (i)
+			{
+				anchors[i].onclick = function ()
+				{
 					self.options.onPlayCallback({startTime: anchors[i].getAttribute('data-starttime')})
 				};
 			})(i);
@@ -83,7 +86,7 @@ EPGList.prototype.setActiveProgram = function (index)
 	}
 };
 
-EPGList.prototype.getProgramLength = function()
+EPGList.prototype.getProgramLength = function ()
 {
 	var container = document.getElementById(this.domId);
 	return container.querySelectorAll(".item").length;

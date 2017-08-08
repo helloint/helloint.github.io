@@ -1,4 +1,5 @@
-(function( $ ) {
+(function ($)
+{
 
 	// EPG List
 	function EPGList($elem, options)
@@ -41,8 +42,10 @@
 				var anchors = $elem[0].querySelectorAll(".play");
 				for (var i = 0; i < anchors.length; i++)
 				{
-					(function(i){
-						anchors[i].onclick = function() {
+					(function (i)
+					{
+						anchors[i].onclick = function ()
+						{
 							options.onPlayCallback({startTime: anchors[i].getAttribute('data-starttime')})
 						};
 					})(i);
@@ -50,15 +53,17 @@
 			}
 		}
 	}
-	
-	$.fn.epgList = function(options) {
+
+	$.fn.epgList = function (options)
+	{
 
 		// Iterate and reformat each matched element.
-		return this.each(function() {
-			var elem = $( this );
+		return this.each(function ()
+		{
+			var elem = $(this);
 			var epgList = new EPGList(elem, options);
 			elem.data("epgList", epgList);
 		});
 	};
 
-}( jQuery ));
+}(jQuery));

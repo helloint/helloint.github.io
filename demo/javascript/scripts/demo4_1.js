@@ -1,5 +1,6 @@
 // EPG Component
-(function(){
+(function ()
+{
 	var EPGList = {
 		domId: null,
 		template: '<li class="item">'
@@ -17,10 +18,11 @@
 			this.loadFeed();
 		},
 
-		loadFeed: function()
+		loadFeed: function ()
 		{
 			var self = this;
-			window.getJSONPFeed(window.addTimestamp(this.feed), "handleEPGCallback", function(data){
+			window.getJSONPFeed(window.addTimestamp(this.feed), "handleEPGCallback", function (data)
+			{
 				self.handleData(data);
 			});
 		},
@@ -44,7 +46,7 @@
 			var container = document.getElementById(this.domId);
 			container.innerHTML = epgDom;
 		},
-		setActiveProgram: function(index)
+		setActiveProgram: function (index)
 		{
 			var container = document.getElementById(this.domId);
 			var prevSelectedEl = container.querySelectorAll(".selected");
@@ -58,12 +60,12 @@
 				window.addClass(elements[index], "selected");
 			}
 		},
-		getProgramLength: function()
+		getProgramLength: function ()
 		{
 			var container = document.getElementById(this.domId);
 			return container.querySelectorAll(".item").length;
 		},
-		handlePlayClick: function(startTime)
+		handlePlayClick: function (startTime)
 		{
 			if (this.onPlayClick)
 			{
@@ -89,7 +91,7 @@
 			{
 				return EPGList.getProgramLength();
 			},
-			handlePlayClick: function(startTime)
+			handlePlayClick: function (startTime)
 			{
 				EPGList.handlePlayClick(startTime);
 			}
