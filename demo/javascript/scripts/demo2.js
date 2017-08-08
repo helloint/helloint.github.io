@@ -6,7 +6,7 @@ var epgTemplate = '<li class="item">'
 
 function loadEPGFeed()
 {
-	getJSONPFeed(addTimestamp(EPG_FEED), "handleEPGCallback", handleEPGData);
+	getJSONPFeed(addTimestamp(window.EPG_FEED), "handleEPGCallback", handleEPGData);
 }
 function handleEPGData(data)
 {
