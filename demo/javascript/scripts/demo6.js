@@ -12,7 +12,7 @@
 
 		function loadEPGFeed()
 		{
-			getJSONPFeed(addTimestamp(epgFeed), "handleEPGCallback", handleEPGData);
+			getJSONPFeed(addTimestamp(EPG_FEED), "handleEPGCallback", handleEPGData);
 		}
 
 		function handleEPGData(data)

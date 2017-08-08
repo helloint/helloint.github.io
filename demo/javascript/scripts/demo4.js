@@ -1,6 +1,6 @@
 // EPG Component
 var epgList = {
-	epgFeed: epgFeed,
+	epgFeed: EPG_FEED,
 	epgTemplate: '<li class="item">'
 	+ '  <div class="title">{{title}}</div>'
 	+ '  <a href="javascript:epgList.onPlayClick(\'{{startTime}}\');">Play</a>'

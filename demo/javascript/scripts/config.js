@@ -1,1 +1,1 @@
-var epgFeed = "./placeholders/epg.js";
+var EPG_FEED = "./placeholders/epg.js";
