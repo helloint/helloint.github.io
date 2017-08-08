@@ -3,6 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<title>EPGList: JavaScript Object</title>
+	<link rel="stylesheet" href="styles/epg.css">
 	<script src="scripts/config.js"></script>
 	<script src="scripts/util.js"></script>
 	<script src="scripts/demo5.js"></script>
@@ -11,16 +12,40 @@
 	  {
 		  alert("Seeking Program..." + program.startTime);
 	  }
+	  var curIdx = -1;
+	  function initUIActions()
+	  {
+		  document.getElementById("prevProgram").onclick = function ()
+		  {
+			  if (curIdx >= 0)
+			  {
+				  epgList.setActiveProgram(--curIdx);
+			  }
+		  };
+		  document.getElementById("nextProgram").onclick = function ()
+		  {
+			  if (curIdx <= epgList.getProgramLength() - 1)
+			  {
+				  epgList.setActiveProgram(++curIdx);
+			  }
+		  };
+	  }
+	</script>
+	<script>
+		var epgList;
 	  window.onload = function ()
 	  {
-		  var epgList = new EPGList("epgContainer", {
+		  epgList = new EPGList("epgContainer", {
 		    epgFeed: EPG_FEED,
 		    onPlayCallback: playProgram
 	    });
+	    initUIActions();
 	  }
 	</script>
 </head>
 <body>
+<input type="button" value="&lt" id="prevProgram"/>
+<input type="button" value="&gt" id="nextProgram"/>
 <div id="epgContainer">
 	<!--
 	<ul>

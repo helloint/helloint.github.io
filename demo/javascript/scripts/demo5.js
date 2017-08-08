@@ -6,7 +6,12 @@ function EPGList(domId, options)
 			+ '  <a href="javascript:void(0);" class="play" data-starttime="{{startTime}}">Play</a>'
 			+ '</li>';
 
-	loadEPGFeed();
+	init();
+	
+	function init()
+	{
+		loadEPGFeed();
+	}
 
 	function loadEPGFeed()
 	{
@@ -49,6 +54,29 @@ function EPGList(domId, options)
 		}
 	}
 	
+	// Public APIs
+	this.setActiveProgram = function (index)
+	{
+		var container = document.getElementById(domId);
+		var prevSelectedEl = container.querySelectorAll(".selected");
+		if (prevSelectedEl.length > 0)
+		{
+			window.removeClass(container.querySelectorAll(".selected")[0], "selected");
+		}
+		var elements = container.querySelectorAll(".item");
+		if (index >= 0 && index < this.getProgramLength())
+		{
+			window.addClass(elements[index], "selected");
+		}
+	};
+	
+	this.getProgramLength = function()
+	{
+		var container = document.getElementById(domId);
+		return container.querySelectorAll(".item").length;
+	};
+	
+	// Utils	
 	// yyyy/MM/dd
 	function formatDate(date)
 	{

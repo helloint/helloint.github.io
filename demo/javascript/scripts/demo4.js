@@ -16,7 +16,6 @@ var epgList = {
 		this.loadFeed();
 	},
 
-	// Entry
 	loadFeed: function()
 	{
 		var self = this;
@@ -50,12 +49,12 @@ var epgList = {
 		var prevSelectedEl = container.querySelectorAll(".selected");
 		if (prevSelectedEl.length > 0)
 		{
-			removeClass(container.querySelectorAll(".selected")[0], "selected");
+			window.removeClass(container.querySelectorAll(".selected")[0], "selected");
 		}
 		var elements = container.querySelectorAll(".item");
 		if (index >= 0 && index < this.getProgramLength())
 		{
-			addClass(elements[index], "selected");
+			window.addClass(elements[index], "selected");
 		}
 	},
 	getProgramLength: function()
