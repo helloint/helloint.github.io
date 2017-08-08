@@ -8,6 +8,7 @@
 	<script src="scripts/util.js"></script>
 	<script src="scripts/demo4.js"></script>
 	<!--<script src="scripts/demo4_1.js"></script>-->
+	<!--<script src="scripts/demo4_2.js"></script>-->
 	<script>
 	  function playProgram(program)
 	  {
@@ -39,6 +40,12 @@
 			  feed: EPG_FEED,
 				onPlayCallback: playProgram
 		  });
+			  
+		  // Singleton
+//	    window.EPGList = EPGListFactory.getInstance("epgContainer", {
+//		    feed: EPG_FEED,
+//		    onPlayCallback: playProgram
+//	    });
 	    initUIActions();
 	  }
 	</script>

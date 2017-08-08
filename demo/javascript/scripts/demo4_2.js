@@ -25,7 +25,7 @@
 	{
 		var self = this;
 
-		var epgFeed = this.options.epgFeed.replace("{date}", window.formatDate(new Date()));
+		var epgFeed = this.options.feed.replace("{date}", window.formatDate(new Date()));
 		window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", function(data){
 			self.handleEPGData(data);
 		});
@@ -90,7 +90,7 @@
 		return container.querySelectorAll(".item").length;
 	};
 	
-	window.EPGList = function(){
+	window.EPGListUI = function(){
 		return function (domId, options) {
 			var epgList = new EPGList(domId, options);
 			this.setActiveProgram = function (index)
@@ -103,4 +103,28 @@
 			};
 		};
 	}();
+})(window);
+
+(function(){
+	window.EPGListFactory = (function ()
+	{
+		var instance;
+
+		function createInstance(domId, options)
+		{
+			var object = new window.EPGListUI(domId, options);
+			return object;
+		}
+
+		return {
+			getInstance: function (domId, options)
+			{
+				if (!instance)
+				{
+					instance = createInstance(domId, options);
+				}
+				return instance;
+			}
+		};
+	})();
 })(window);
