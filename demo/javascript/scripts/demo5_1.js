@@ -1,90 +1,90 @@
 // EPG List
-function EPGList(domId, options)
+var EPGList = function (domId, options)
 {
-	var epgTemplate = '<li class="item">'
-			+ '  <div class="title">{{title}}</div>'
-			+ '  <a href="javascript:void(0);" class="play" data-starttime="{{startTime}}">Play</a>'
-			+ '</li>';
-
-	init();
-
-	function init()
+	this.domId = domId;
+	this.options = {};
+	for (var item in options)
 	{
-		loadEPGFeed();
+		this.options[item] = options[item];
 	}
+	this._init();
+};
 
-	function loadEPGFeed()
+EPGList.prototype.epgTemplate = '<li class="item">'
+		+ '  <div class="title">{{title}}</div>'
+		+ '  <a href="javascript:void(0);" class="play" data-starttime="{{startTime}}">Play</a>'
+		+ '</li>';
+
+EPGList.prototype._init = function ()
+{
+	this._loadEPGFeed();
+};
+
+EPGList.prototype._loadEPGFeed = function ()
+{
+	var self = this;
+	
+	var epgFeed = this.options.epgFeed.replace("{date}", window.formatDate(new Date()));
+	window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", function(data){
+		self._handleEPGData(data);
+	});
+};
+
+EPGList.prototype._handleEPGData = function (data)
+{
+	var epgArr = [];
+	for (var i = 0; i < data[0].items.length; i++)
 	{
-		var epgFeed = options.epgFeed.replace("{date}", formatDate(new Date()));
-		getJSONPFeed(addTimestamp(epgFeed), "handleEPGCallback", handleEPGData);
+		epgArr[epgArr.length] = {title: data[0].items[i].e, startTime: data[0].items[i].sl};
 	}
+	this._renderEPGUI(epgArr);
+};
 
-	function handleEPGData(data)
+EPGList.prototype._renderEPGUI = function (epgArr)
+{
+	var self = this;
+	
+	var epgDom = "<ul>";
+	for (var i = 0; i < epgArr.length; i++)
 	{
-		var epgArr = [];
-		for (var i = 0; i < data[0].items.length; i++)
-		{
-			epgArr[epgArr.length] = {title: data[0].items[i].e, startTime: data[0].items[i].sl};
-		}
-		renderEPGUI(epgArr);
+		epgDom += this.epgTemplate.replace(/{{title}}/g, epgArr[i].title).replace(/{{startTime}}/g, epgArr[i].startTime);
 	}
+	epgDom += "</ul>";
+	var container = document.getElementById(this.domId);
+	container.innerHTML = epgDom;
 
-	function renderEPGUI(epgArr)
+	if (this.options.onPlayCallback)
 	{
-		var epgDom = "<ul>";
-		for (var i = 0; i < epgArr.length; i++)
+		var anchors = document.getElementById(self.domId).querySelectorAll(".play");
+		for (var i = 0; i < anchors.length; i++)
 		{
-			epgDom += epgTemplate.replace(/{{title}}/g, epgArr[i].title).replace(/{{startTime}}/g, epgArr[i].startTime);
-		}
-		epgDom += "</ul>";
-		var container = document.getElementById(domId);
-		container.innerHTML = epgDom;
-
-		if (options.onPlayCallback)
-		{
-			var anchors = document.getElementById(domId).querySelectorAll(".play");
-			for (var i = 0; i < anchors.length; i++)
-			{
-				(function(i){
-					anchors[i].onclick = function() {
-						options.onPlayCallback({startTime: anchors[i].getAttribute('data-starttime')})
-					};
-				})(i);
-			}
+			(function(i){
+				anchors[i].onclick = function() {
+					self.options.onPlayCallback({startTime: anchors[i].getAttribute('data-starttime')})
+				};
+			})(i);
 		}
 	}
+};
 
-	// Public APIs
-	this.setActiveProgram = function (index)
+// Public APIs
+EPGList.prototype.setActiveProgram = function (index)
+{
+	var container = document.getElementById(this.domId);
+	var prevSelectedEl = container.querySelectorAll(".selected");
+	if (prevSelectedEl.length > 0)
 	{
-		var container = document.getElementById(domId);
-		var prevSelectedEl = container.querySelectorAll(".selected");
-		if (prevSelectedEl.length > 0)
-		{
-			window.removeClass(container.querySelectorAll(".selected")[0], "selected");
-		}
-		var elements = container.querySelectorAll(".item");
-		if (index >= 0 && index < this.getProgramLength())
-		{
-			window.addClass(elements[index], "selected");
-		}
-	};
-
-	this.getProgramLength = function()
-	{
-		var container = document.getElementById(domId);
-		return container.querySelectorAll(".item").length;
-	};
-
-	// Utils	
-	// yyyy/MM/dd
-	function formatDate(date)
-	{
-		var year = date.getFullYear();
-		var day = date.getDate();
-		var month = date.getMonth() + 1;
-		day = day < 10 ? "0" + day : day;
-		month = month < 10 ? "0" + month : month;
-		return year + "/" + month + "/" + day;
+		window.removeClass(container.querySelectorAll(".selected")[0], "selected");
 	}
-}
+	var elements = container.querySelectorAll(".item");
+	if (index >= 0 && index < this.getProgramLength())
+	{
+		window.addClass(elements[index], "selected");
+	}
+};
+
+EPGList.prototype.getProgramLength = function()
+{
+	var container = document.getElementById(this.domId);
+	return container.querySelectorAll(".item").length;
+};

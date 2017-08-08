@@ -16,7 +16,7 @@ function EPGList(domId, options)
 	function loadEPGFeed()
 	{
 		var epgFeed = options.epgFeed.replace("{date}", formatDate(new Date()));
-		getJSONPFeed(addTimestamp(epgFeed), "handleEPGCallback", handleEPGData);
+		window.getJSONPFeed(window.addTimestamp(epgFeed), "handleEPGCallback", handleEPGData);
 	}
 
 	function handleEPGData(data)

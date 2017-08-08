@@ -133,3 +133,19 @@ function removeClass(el, className)
 	else
 		el.className = el.className.replace(new RegExp('(^|\\b)' + className.split(' ').join('|') + '(\\b|$)', 'gi'), ' ');	
 }
+
+/* Date functions */
+/**
+ * Convert date object to date string in format: yyyy/MM/dd
+ * @param date
+ * @returns {string}
+ */
+function formatDate(date)
+{
+	var year = date.getFullYear();
+	var day = date.getDate();
+	var month = date.getMonth() + 1;
+	day = day < 10 ? "0" + day : day;
+	month = month < 10 ? "0" + month : month;
+	return year + "/" + month + "/" + day;
+}
