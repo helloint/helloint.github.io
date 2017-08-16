@@ -51,7 +51,7 @@ angular.module('myapp',[])
 	$scope.CurrentCny = 0;
 	$scope.dataList=$scope.dataList1;
 	$scope.slider=0;
-	$scope.silderBtn=!window.localStorage.getItem('dataList')? false : JSON.parse(window.localStorage.getItem('dataList')).length==0 ? false : true;
+    $scope.silderBtn=!window.localStorage.getItem('dataList')? false : JSON.parse(window.localStorage.getItem('dataList')).length==0 ? false : true;
 	dataValue.getCurrentPrice().then(function(data){
 		window.localStorage.setItem('CurrentPrice',data);
 	})
@@ -96,7 +96,7 @@ angular.module('myapp',[])
 		list.stage2=new Date(list.begin.getTime()+63072000000);
 		list.stage3=new Date(list.begin.getTime()+94608000000);
 		list.stage4=new Date(list.begin.getTime()+126144000000);
-		list.total=numMulti((numSub($scope.ConvertedPrice,data.exercise)),data.quantity).toFixed(2);
+		list.total=(numSub($scope.ConvertedPrice,data.exercise)<=0)? 0 : numMulti((numSub($scope.ConvertedPrice,data.exercise)),data.quantity).toFixed(2);
 		$scope.dataList1.unshift(list);
 		window.localStorage.setItem('dataList',angular.toJson($scope.dataList1));
 		/*计算TotalValue值	计算currentValue的值*/ 
@@ -156,7 +156,7 @@ angular.module('myapp',[])
 		$scope.ConvertedPrice=numMulti($scope.CurrentPrice,$scope.ExchangeRate).toFixed(2);
 		$scope.TotalValue=0;$scope.Current=0;
 		angular.forEach($scope.dataList1,function(ele,index){
-			ele.total=numMulti((numSub($scope.ConvertedPrice,ele.exercise)),ele.quantity);
+			ele.total=(numSub($scope.ConvertedPrice, ele.exercise)<=0)? 0 : numMulti((numSub($scope.ConvertedPrice,ele.exercise)),ele.quantity);
 			$scope.TotalValue =numAdd($scope.TotalValue, ele.total);
 			$scope.Current=numAdd(numMulti(selectTime(ele.begin),ele.total),$scope.Current);
 			$scope.TotalValueCny =numMulti($scope.TotalValue,$scope.ExchangeRateCny);
@@ -200,7 +200,6 @@ angular.module('myapp',[])
 	 }
 
 	function watchSlider(timestr){
-		console.log($scope.slider)
 		$scope.$watch('slider',function(n,o){
 		var num=0; 
 		angular.forEach($scope.dataList,function(ele,index){
@@ -345,7 +344,7 @@ angular.module('myapp',[])
 
 	/*处理乘法的小数点问题*/
 	function numMulti(num1, num2) { 
-		var baseNum = 0; 
+		var baseNum = 0;
 		try { 
 			baseNum += num1.toString().split(".")[1].length; 
 		} catch (e) { 
@@ -353,7 +352,7 @@ angular.module('myapp',[])
 		try { 
 			baseNum += num2.toString().split(".")[1].length; 
 		} catch (e) { 
-		} 
-		return Number(num1.toString().replace(".", "")) * Number(num2.toString().replace(".", "")) / Math.pow(10, baseNum); 
+		}
+		return Number(num1.toString().replace(".", "")) * Number(num2.toString().replace(".", "")) / Math.pow(10, baseNum);
 	}; 
 }])
