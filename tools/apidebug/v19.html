@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>API Debug Page</title>
+	<meta charset="utf-8"/>
+	<script src="scripts/jquery.js"></script>
+	<script src="scripts/jquery.cookie-1.3.1.js"></script>
+	<style>
+		body {
+			font: 12px arial;
+		}
+		.area {
+			margin-top: 10px;
+		}
+		ul {
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		input,select,label{vertical-align:middle;}
+		.result {
+			position: fixed;
+			top: 0;
+			right: 0;
+			width: 500px;
+			height: 500px;
+			border: 1px dashed black;
+			z-index: 10;
+			background-color: white;
+		}
+	</style>
+	<link type="text/css" href="styles/jquery-ui.css" rel="stylesheet" />
+	<script src="scripts/jquery-ui.min.js"></script>
+	<script src="scripts/handlebars.min.js"></script>
+	<script src="scripts/v19/api.js"></script>
+	<script src="scripts/v19/config.js"></script>
+	<script src="scripts/v19/app.js"></script>
+	<script>
+		$(document).ready(function ()
+		{
+			// init data
+			$("#domain").html(domainTmpl({"items": domains}));
+			$("#skuGroups").html(skuGroupTmpl({"items": skuGroups}));
+			$("#email").val($.cookie(emailCookieName));
+
+			// init function
+			if ($.cookie(domainCookieName))
+			{
+				var cookieDomain = $.cookie(domainCookieName);
+				$("#domain").val(cookieDomain);
+				if ($.inArray(cookieDomain, domains) == -1) {
+					addCustomDomain(cookieDomain);
+				}
+			}
+			$("#addCustomDomain").click(function(){
+				addCustomDomain($("#customDomain").val());
+			});
+			$("#login").click(login);
+			$("#logout").click(logout);
+			$("#registration").click(register);
+			$("#subscription").click(subscribe);
+			$("#regSubscription").click(regSubscribe);
+			$("input[name='sku']").change(function(){
+				$("#sku").val($(this).val());
+			});
+
+			// init UI
+			$("#domain").selectmenu({
+				create: function( event, ui ){
+					domainChanged($("#domain").val());
+				},
+				change: function(event, data){
+					domainChanged(data.item.value);
+				}
+			});
+			$("#sslAttempt").tooltip();
+			$(".button").button();
+			$("#skuGroups li").buttonset();
+			$("#skuGroups").accordion({
+				collapsible: true,
+				animate: 200
+			});
+		})
+	</script>
+</head>
+<body>
+<a href="index.html">Goto v5</a>
+<iframe id="result" class="result"></iframe>
+<fieldset>
+	<legend>Select Domain</legend>
+	<div class="ui-widget">
+		<select id="domain">
+			<script id="domainTmpl" type="text/template">
+				{{#each items}}
+					<option value="{{this}}">{{this}}</option>
+				{{/each}}
+			</script>
+		</select>
+		<script>
+			var domainTmpl = Handlebars.compile($("#domainTmpl").html());
+			$("#domainTmpl").remove();
+		</script>
+		<a id="sslAttempt" href="javascript:void(0);" target="_blank" title="Open SSL page directly to get cerf confirmed first">Hit SSL</a>
+	</div>
+	<div>
+		<input id="customDomain" type="text" placeholder="Add Custom Domain"/>
+		<button id="addCustomDomain" class="button">Add</button>
+	</div>
+</fieldset>
+<fieldset>
+	<legend>Authentication</legend>
+	<div id="loginArea" class="area ui-widget">
+		<label>Email:</label><input id="email" type="text" placeholder="Email/Username"/>
+		<button id="login" class="button">Login</button><button id="logout" class="button">Logout</button>
+	</div>
+	<div id="registerArea" class="area">
+		<button id="registration" class="button">Register</button>
+	</div>
+</fieldset>
+<fieldset>
+	<legend>Subscription</legend>
+	<div id="subscribeArea" class="area ui-widget">
+		<label>SKU:</label><input id="sku" type="text" placeholder="SKU"/>
+		<button id="subscription" class="button">Subscribe</button><br/>
+		<button id="regSubscription" class="button">Register & Subscribe</button>
+		<span>* Some projects doesn't support registration only</span>
+		<h3>Examples</h3>
+		<div id="skuGroups">
+			<script id="skuGroupTmpl" type="text/template">
+				{{#each items}}
+				<li>
+					<h3>{{name}}</h3>
+					<div>
+						{{#each skus}}
+						<input type="radio" id="radio_{{../id}}_{{@index}}" name="sku" value="{{id}}"><label for="radio_{{../id}}_{{@index}}">{{name}}</label>
+						{{/each}}
+					</div>
+				</li>
+				{{/each}}
+			</script>
+		</div>
+		<script>
+			var skuGroupTmpl = Handlebars.compile($("#skuGroupTmpl").html());
+			$("#skuGroupTmpl").remove();
+		</script>
+	</div>
+</fieldset>
+</body>
+</html>
