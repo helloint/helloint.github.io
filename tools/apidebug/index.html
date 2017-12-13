@@ -64,6 +64,8 @@
 					$.removeCookie(enableUsernameCookieName);
 				}
 			}).tooltip();
+
+			$("#apiValidate").click(apiValidate);
 			
 			// init UI
 			$("#sslAttempt").tooltip();
@@ -168,6 +170,13 @@
 			var skuGroupTmpl = Handlebars.compile($("#skuGroupTmpl").html());
 			$("#skuGroupTmpl").remove();
 		</script>
+	</div>
+</fieldset>
+<fieldset>
+	<legend>API Server Validation</legend>
+	<div id="apiValidationArea" class="area ui-widget">
+		<button id="apiValidate" class="button">Validate</button>
+		<span class="result"></span>
 	</div>
 </fieldset>
 </body>

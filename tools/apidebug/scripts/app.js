@@ -206,3 +206,45 @@ function isCustomDomain(domain)
 	}
 	return true;
 }
+function apiValidate()
+{
+	var $output = $("#apiValidationArea .result");
+	$output.empty();
+
+	$output.text("Checking API Server...");
+	$.getJSON(API.domain + "service/config?format=json&callback=?", function (data)
+	{
+		var apiServer = data.services.api;
+		if (apiServer)
+		{
+			$output.text("Got API Server. Checking token...");
+			$.getJSON(API.domain + "secure/accesstoken?format=json&callback=?", function (data)
+			{
+				var token = data.data.accessToken;
+				if (token)
+				{
+					$output.text("Got token. Validating token...");
+					$.getJSON(apiServer + "v1/config?token=" + token + "&callback=?", function (data)
+					{
+						if (data.services.api == apiServer)
+						{
+							$output.text("Token validated!");
+						}
+						else
+						{
+							$output.text("Token validation failed! API_SECRET_USER not match, please check if APP Server & API Server are using same DB!");
+						}
+					});
+				}
+				else
+				{
+					$output.text("API_SECRET_USER missing!");
+				}
+			})
+		}
+		else
+		{
+			$output.text("No API SERVER configured!");
+		}
+	});
+}
