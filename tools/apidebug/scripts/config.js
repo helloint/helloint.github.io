@@ -37,6 +37,19 @@ var projects = [
 		]
 	},
 	{
+		"id": "univisionnow",
+		"name": "Univision Now",
+		"domains": [
+			"https://www.univisionnow.com/",
+			"https://univisionnowv2stage.neulion.com/",
+			"https://univisionnowv2.neulion.com/",
+			"https://dev.univisionnow.com/"
+		],
+		"skus": [
+			"BUNOWPLUSM", "BUNOWVODM"
+		]
+	},
+	{
 		"id": "nchc",
 		"name": "NCHC",
 		"domains": [
@@ -68,19 +81,6 @@ var projects = [
 		],
 		"skus": [
 			"PPAYPERVIEW"
-		]
-	},
-	{
-		"id": "univisionnowv2",
-		"name": "Univision Now V2",
-		"domains": [
-			"https://www.univisionnow.com/",
-			"https://univisionnowv2.neulion.com/",
-			"https://dev.univisionnow.com/",
-			"https://dev.univisionnowv2.com/"
-		],
-		"skus": [
-			"BUNOWPLUSM", "BUNOWVODM"
 		]
 	},
 	{
