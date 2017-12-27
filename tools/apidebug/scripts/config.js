@@ -46,7 +46,7 @@ var projects = [
 			"https://dev.univisionnow.com/"
 		],
 		"skus": [
-			"BUNOWPLUSM", "BUNOWVODM"
+			"BMONTHLY", "BUNOWVODM"
 		]
 	},
 	{
