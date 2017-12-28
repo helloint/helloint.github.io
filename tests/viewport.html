@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf-8"/>
+	<meta id="viewport" name="viewport" content="width=device-width" />
+	<!--<meta name="viewport" content="width=device-width,initial-scale=1.0" />-->
+	<!--<meta name="viewport" content="initial-scale=1.0, user-scalable=no"/>-->
+	<style>
+		/* Thanks for viewportsizes.com */
+		html, body { border: 0; margin: 0; padding: 0; }
+		body {font-family: 'Courier New', Courier, monospace; }
+		.board { background: #e00; color: #fff; font-family: 'Courier New', Courier, monospace; font-size: 3.125em; left: 0; line-height: normal; padding: 3px 6px 5px 6px; text-align: center; }
+		#h { color: #ff8080; }
+		#c { font-family: sans-serif; font-size: 1.25em; line-height: 1.5em; padding: 0 1em; }
+		i { color: #444; }
+		#note { color: #444; font-size: 0.85em; }
+		#ua { font-family: 'Courier New', Courier, monospace; font-size: 0.85em; line-height: normal; }
+		p:last-child { font-size: 0.75em; margin-top: 30px; }
+		#divContent { width: auto; }
+	</style>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script>
+		var setCookie = function (name, value, days)
+		{
+			var expires;
+			if (days)
+			{
+				var date = new Date();
+				date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+				expires = "; expires=" + date.toGMTString();
+			}
+			else
+			{
+				expires = "";
+			}
+			document.cookie = name + "=" + value + expires + "; path=/";
+		};
+
+		var getCookie = function (name)
+		{
+			if (document.cookie.length > 0)
+			{
+				var startIdx, endIdx;
+				startIdx = document.cookie.indexOf(name + "=");
+				if (startIdx != -1)
+				{
+					startIdx = startIdx + name.length + 1;
+					endIdx = document.cookie.indexOf(";", startIdx);
+					if (endIdx == -1)
+					{
+						endIdx = document.cookie.length;
+					}
+					return unescape(document.cookie.substring(startIdx, endIdx));
+				}
+			}
+			return null;
+		};
+	</script>
+</head>
+<body>
+<div id="vp" class="board">Viewport: <span id="w"></span><span id="h"></span></div>
+<div id="c">
+	<p id="ua"></p>
+</div>
+<script>
+	$(function(){
+		/* Thanks for viewportsizes.com */
+		var detectVP = function () {
+			if (typeof(document.documentElement.clientWidth) != 'undefined') {
+				var $w = document.getElementById('w'),
+						$h = document.getElementById('h'),
+						$ua = document.getElementById('ua');
+				$w.innerHTML = document.documentElement.clientWidth;
+				$h.innerHTML = ' &times; ' + document.documentElement.clientHeight;
+				window.onresize = function(event) {
+					$w.innerHTML = document.documentElement.clientWidth;
+					$h.innerHTML = ' &times; ' + document.documentElement.clientHeight;
+				};
+				$ua.innerHTML = navigator.userAgent;
+			}
+			setTimeout(detectVP, 1000);
+		};
+		detectVP();
+	});
+</script>
+<div id="divContent" class="board">Container: <span id="divWidth">auto</span></div>
+<fieldset>
+	<legend>Selector</legend>
+	<label for="viewportSelector">Device Width</label>
+	<select name="viewportSelector" id="viewportSelector">
+		<option selected>device-width</option>
+		<option>320</option>
+		<option>375</option>
+		<option>414</option>
+		<option>480</option>
+		<option>960</option>
+		<option>1024</option>
+		<option>1280</option>
+		<option>1920</option>
+	</select><br/>
+	<label for="divWidthSelector">Div Width</label>
+	<select name="divWidthSelector" id="divWidthSelector">
+		<option selected>auto</option>
+		<option>320px</option>
+		<option>375px</option>
+		<option>414px</option>
+		<option>480px</option>
+		<option>960px</option>
+		<option>1024px</option>
+		<option>1280px</option>
+		<option>1920px</option>
+	</select>
+	<br/>
+	<button onclick="reload()">RELOAD</button><button onclick="reset()">RESET</button>
+</fieldset>
+<script>
+	function setViewport(viewport, save)
+	{
+		document.getElementById("viewport").setAttribute("content", "width=" + viewport);
+		save && setCookie("viewport", viewport);
+	}
+	function setDivWidth(divWidth, save)
+	{
+		$("#divContent").css("width", divWidth);
+		$("#divWidth").text(divWidth);
+		save && setCookie("divWidth", divWidth);		
+	}
+	$("#viewportSelector").on("change", function ()
+	{
+		setViewport($(this).val(), true);
+	});
+	$("#divWidthSelector").on("change", function (val)
+	{
+		setDivWidth($(this).val(), true);
+	});
+	
+	if (getCookie("viewport") != null)
+	{
+		var viewport = getCookie("viewport");
+		setViewport(viewport);
+		$("#viewportSelector").val(viewport);
+	}
+	if (getCookie("divWidth") != null)
+	{
+		var divWidth = getCookie("divWidth");
+		setDivWidth(divWidth);
+		$("#divWidth").text(divWidth);
+		$("#divWidthSelector").val(divWidth);
+	}
+	var reload = function()
+	{
+		location.reload(true);
+	};
+	var reset = function()
+	{
+		setCookie("viewport", null, -1);
+		setCookie("divWidth", null, -1);
+		reload();
+	};
+</script>
+<pre style="display: none;">
+	viewport有以下一些属性:
+	width
+		1. width=device-width
+			是让浏览器(设备)采用最佳视窗大小. 只适用于响应式页面.
+		2. width=960
+		 	也可以指定width, 让设备适配页面. 但需要注意这个width如果大于设备物理分辨率, 会出现横向滚动条
+		 	比如你现在页面是1920, 所以只能让设备以1920分辨率显示, 让设备适应页面
+		 	但这个方案在设备物理分辨率低于1920时, 就会出现横向滚动条
+
+	initial-scale
+		设置initial-scale=1.0可以阻止浏览器自动计算合适的scale显示(通常是为了满幕显示).
+		如果不设置initial-scale,当width < device-width时,会放大scale值直到撑满device-width(满屏显示),或者scale==maximum-scale
+	
+	minimum-scale/maximum-scale
+		设置maximum-scale=1可以防止图片强制放大后变得模糊
+		设置minimum-scale=1可以使得在手机等小屏设备上,页面仍然以1:1显示.(不常用)
+
+	user-scalable
+		https://stackoverflow.com/questions/6397748/whats-the-point-of-meta-viewport-user-scalable-no-in-the-google-maps-api
+	
+	如果不设置width,iPad和iPhone上Safari默认的width=980,其他浏览器如下:
+		Safari iPhone: 980px
+		Opera: 850px
+		Android WebKit: 800px
+		IE: 974px
+		iPhone的device-width=320,iPad的device-width=1024
+		Android主流的800x480的设备的device-pixel-ratio=1.5,也就是说device-width=320,screen-width=480.
+	
+	viewport建议设置如下:
+		PC平台: "width={page-width},maximum-scale=1,user-scalable=no"
+				PC上最好是在不设置viewport的情况下,同样能达到最佳浏览效果.
+		移动设备: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		TV: "width=960"
+</pre>
+</body>
+</html>
