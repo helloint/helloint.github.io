@@ -66,6 +66,7 @@ var projects = [
 		"name": "IvyLeague",
 		"domains": [
 			"http://www.ivyleaguenetwork.com/",
+			"https://ivyleaguestage.neulion.com/",
 			"https://dev.ivyleague.tv/"
 		],
 		"skus": [
