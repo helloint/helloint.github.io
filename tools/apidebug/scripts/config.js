@@ -53,8 +53,8 @@ var projects = [
 		"id": "nchc",
 		"name": "NCHC",
 		"domains": [
-			"http://www.nchc.tv/",
-			"http://stagenchc.neulion.com/",
+			"https://www.nchc.tv/",
+			"https://stagenchc.neulion.com/",
 			"https://nchcdev.neulion.com/"
 		],
 		"skus": [
@@ -77,6 +77,7 @@ var projects = [
 		"id": "canal",
 		"name": "Canal",
 		"domains": [
+			"https://canal.neulion.com/",
 			"https://canalstage.neulion.com/",
 			"https://canaldev.neulion.com/"
 		],
@@ -162,7 +163,7 @@ var projects = [
 			"https://dev1.fanpass.net/"
 		],
 		"skus": [
-			"BSPORTMONTHLYMOBILE", "BSPORTMONTHLYMOBILE", "BSPORTWEEK", "BSPORTDAY", "PWWE", "BSRUGS", "BSRUGH", "BSRUGM", "BSRUGW", "BSRUGF", "BNRLS", "BF1S"
+			"BCONTACTENERGYMOBILE", "BVODAFONEMOBILE", "BSPORTMONTHLYMOBILE", "BSPORTMONTHLYMOBILE", "BSPORTWEEK", "BSPORTDAY", "PWWE", "BSRUGS", "BSRUGH", "BSRUGM", "BSRUGW", "BSRUGF", "BNRLS", "BF1S"
 		]
 	},
 	{
