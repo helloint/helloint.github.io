@@ -85,8 +85,13 @@ function subscribe(callback)
 	{
 		ids = null;
 	}
+	var promoCode = $("#promoCode").val();
+	if (promoCode == "")
+	{
+		promoCode = null;
+	}
 	$("#subscribeArea .result").empty();
-	API.callSubscription(sku, ids, function (data)
+	API.callSubscription(sku, ids, promoCode, function (data)
 	{
 		$("#subscribeArea .result").text(JSON.stringify(data));
 		if ($.isFunction(callback))

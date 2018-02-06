@@ -5,7 +5,7 @@ var API = {
 	"login": "{domain}secure/authenticate?username={email}&password=111111&format=json",
 	"logout": "{domain}service/logout?format=json",
 	"profile": "{domain}account/profile?format=json",
-	"subscription": "{domain}secure/register?billing_address1=address1&billing_city=city&billing_country=DZ&billing_zip=1&cardnumber=4111111111111111&cardsc=111&cardholder=First%20Last&cardexpmonth=1&cardexpyear=2020&sku={sku}{ppvId}&format=json",
+	"subscription": "{domain}secure/register?billing_address1=address1&billing_city=city&billing_country=DZ&billing_zip=1&cardnumber=4111111111111111&cardsc=111&cardholder=First%20Last&cardexpmonth=1&cardexpyear=2020&sku={sku}{ppvId}{promo}&format=json",
 
 	"callRegistration": function (username, email, callback)
 	{
@@ -40,7 +40,7 @@ var API = {
 			}
 		});
 	},
-	"callSubscription": function (sku, ids, callback)
+	"callSubscription": function (sku, ids, promoCode, callback)
 	{
 		var url = this.subscription.replace(/\{domain\}/g, this.domain).replace(/\{sku\}/g, sku);
 		var ppvId = "";
@@ -56,6 +56,12 @@ var API = {
 			}
 		}
 		url = url.replace(/\{ppvId\}/g, ppvId);
+		var promo = "";
+		if (promoCode != null)
+		{
+			promo = "&promo=" + promoCode;
+		}
+		url = url.replace(/\{promo\}/g, promo);
 		$.getJSON(url + "&callback=?", function (data)
 		{
 			if ($.isFunction(callback))
