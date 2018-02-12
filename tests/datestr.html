@@ -48,6 +48,7 @@
 			["2016-06-01T11:12:30.000", false, 'Local', "2016-06-01T11:12:30+00:00"]	// NeuLion App Server
 		];
 		$(document).ready(function(){
+			$("#userAgent").text(navigator.userAgent);
 			// Test
 			var $testTable = $("#testTable");
 			for (var i = 0; i < strArr.length; i++)
@@ -167,7 +168,7 @@
 	<tr><td class="not-correct">Supported but timezone doesn't match</td></tr>
 	<tr><td class="not-support">Not supported</td></tr>
 </table>
-<h2>Your Browser:</h2>
+<h2>Your Browser: <span id="userAgent"></span></h2>
 <table id="testTable" border="1">
 	<tr><th>Date Str</th><th>Result</th></tr>
 </table>
