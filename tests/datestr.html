@@ -31,8 +31,7 @@
 	</style>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<script>
-		// TODO test timezone
-		// the 2nd row 'true' means the format is ISO 8601: https://en.wikipedia.org/wiki/ISO_8601
+		// [dateformat sample, ISO 8601 or not, correct time zone, date value for comparision]
 		var strArr = [
 			["Jun 1, 2016", false, 'Local', "2016-06-01T00:00:00+00:00"],
 			["Mon, 25 Dec 1995 13:30:00 GMT", false, 'GMT', "1995-12-25T13:30:00+00:00"],
@@ -84,56 +83,60 @@
 					"testCase": [2,2,2,2,0,2,2,2,2,2,2,2,2]
 				},
 				{
-					"name": "Firefox 47",
+					"name": "Firefox 58",
 					"testCase": [2,2,2,2,0,2,2,2,2,2,2,2,2]
 				},
 				{
 					"name": "IE Edge",
-					"testCase": [2,2,2,2,2,2,2,2,2,2,2,2,2]
+					"testCase": [2,2,2,2,1,2,2,2,2,2,2,2,2]	// '2016/06/01T11:12:30' will have one hour plus...
 				},
 				{
 					"name": "IE 11",
-					"testCase": [2,2,2,2,2,2,0,2,2,2,2,2,2]
+					"testCase": [2,2,2,2,1,2,0,2,2,2,2,2,2]
 				},
 				{
 					"name": "IE 10",
-					"testCase": [2,2,2,2,0,2,0,2,2,2,2,2,2]
+					"testCase": [2,2,2,2,1,2,0,2,2,2,2,2,2]
 				},
 				{
 					"name": "IE 9",
-					"testCase": [2,2,2,2,0,2,0,2,2,2,2,2,2]
+					"testCase": [2,2,2,2,1,2,0,1,2,2,2,2,1]
 				},
 				{
-					"name": "IE 8",
+					"name": "Opera 51",
 					"testCase": [2,2,2,2,0,2,2,2,2,2,2,2,2]
 				},
 				{
-					"name": "Opera 39",
+					"name": "Sougou 7.5.5",
+					"testCase": [2,2,2,2,0,2,2,1,2,2,2,2,1]
+				},
+				{
+					"name": "Safari 11.0.3 on macOS (Sierra 10.12.6)",
+					"testCase": [2,2,2,2,0,2,0,1,2,2,2,2,1]
+				},
+				{
+					"name": "Safari 9.1.2 on OS X (Yosemite 10.10.5)",
+					"testCase": [2,2,2,2,0,2,0,1,2,2,2,2,1]
+				},
+				{
+					"name": "Chrome(64) on macOS",
 					"testCase": [2,2,2,2,0,2,2,2,2,2,2,2,2]
 				},
 				{
-					"name": "Safari 5.1.7(Windows)",
-					"testCase": [2,2,2,2,0,0,0,0,2,2,2,2,0]
+					"name": "Safari on iOS(11.2.2)",
+					"testCase": [2,2,2,2,0,2,0,1,2,2,2,2,1]
 				},
 				{
-					"name": "Safari 9.1.2 (Mac)",
-					"testCase": [2,2,2,2,0,2,0,2,2,2,2,2,2]
+					"name": "Chrome(64) on iOS(11.2.2)",
+					"testCase": [2,2,2,2,0,2,0,1,2,2,2,2,1]
 				},
 				{
-					"name": "Safari (iOS)",
-					"testCase": [2,2,2,2,0,2,0,2,2,2,2,2,2]
-				},
-				{
-					"name": "Chrome (iOS)",
-					"testCase": [2,2,2,2,0,2,0,2,2,2,2,2,2]
-				},
-				{
-					"name": "Chrome on Nexus (Android)",
+					"name": "Chrome(58) on Nexus (Android 7.1.1)",
 					"testCase": [2,2,2,2,0,2,2,2,2,2,2,2,2]
 				},
 				{
-					"name": "Default Browser on XiaoMi (Android)",
-					"testCase": [2,2,2,2,0,2,2,2,2,2,2,2,2]
+					"name": "XiaoMi (Android)",
+					"testCase": [2,2,2,2,0,2,2,1,2,2,2,2,1]
 				}
 			];
 			var $reportTable = $("#reportTable");
