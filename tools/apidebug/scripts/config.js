@@ -37,6 +37,17 @@ var projects = [
 		]
 	},
 	{
+		"id": "nltv",
+		"name": "NeuLion TV",
+		"domains": [
+			"https://nltv.neulion.com/",
+			"https://nltvdev.neulion.com/"
+		],
+		"skus": [
+			"PANNUAL", "PPPV"
+		]
+	},
+	{
 		"id": "univisionnow",
 		"name": "Univision Now",
 		"domains": [
