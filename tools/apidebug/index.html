@@ -31,7 +31,11 @@
 			// init data
 			$("#domain").html(domainTmpl({"items": projects}));
 			$("#skuGroups").html(skuGroupTmpl({"items": projects}));
-			$("#email").val($.cookie(emailCookieName));
+			$("#email").val($.cookie(emailCookieName)).autocomplete({
+				delay: 0,
+				minLength: 0,
+				source: getFromCache("email") || [],
+			});
 
 			// init function
 			$("#addCustomDomain").click(function(){

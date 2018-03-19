@@ -22,6 +22,8 @@ function login(callback)
 			callback();
 		}
 	});
+	addToCache("email", email);
+	$("#email").data("ui-autocomplete").option("source", getFromCache("email") || [])
 }
 function logout(callback)
 {
@@ -252,4 +254,28 @@ function apiValidate()
 			$output.text("No API SERVER configured!");
 		}
 	});
+}
+
+function addToCache(name, value)
+{
+	if (window.localStorage)
+	{
+		var values = JSON.parse(window.localStorage.getItem(name));
+		if (values == null) values = [];
+		values.unshift(value);
+		window.localStorage.setItem(name, JSON.stringify(values));
+	}
+}
+function getFromCache(name)
+{
+	var values = null;
+	if (window.localStorage)
+	{
+		values = JSON.parse(window.localStorage.getItem(name));
+		if (values != null && values.length == 0)
+		{
+			values = null;
+		}
+	}
+	return values;
 }
