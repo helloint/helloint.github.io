@@ -256,6 +256,34 @@ function apiValidate()
 	});
 }
 
+function userIdDecode()
+{
+	var $output = $("#userIdDecodingArea .result");
+	$output.empty();
+
+	var encryptedUserID = $("#userIdQoS").val();
+	var decodedUserID = "";
+
+	try
+	{
+		var parts = encryptedUserID.split("-");
+		for (var i = 0; i < parts.length; ++i)
+		{
+			var octValue = parseInt(parts[i], 16);
+			var ascii = octValue + 13 - i - i % 3;
+			var c = String.fromCharCode(ascii);
+
+			decodedUserID += c;
+		}
+	}
+	catch (e)
+	{
+		alert(e)
+	}
+
+	$output.text(decodedUserID);
+}
+
 function addToCache(name, value)
 {
 	if (window.localStorage)

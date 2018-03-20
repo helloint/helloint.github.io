@@ -70,6 +70,7 @@
 			}).tooltip();
 
 			$("#apiValidate").click(apiValidate);
+			$("#userIdDecode").click(userIdDecode);
 			
 			// init UI
 			$("#sslAttempt").tooltip();
@@ -181,6 +182,14 @@
 	<legend>API Server Validation</legend>
 	<div id="apiValidationArea" class="area ui-widget">
 		<button id="apiValidate" class="button">Validate</button>
+		<span class="result"></span>
+	</div>
+</fieldset>
+<fieldset>
+	<legend>QoS userId Decoding</legend>
+	<div id="userIdDecodingArea" class="area ui-widget">
+		<input id="userIdQoS" type="text" placeholder="userId"/>
+		<button id="userIdDecode" class="button">Decode</button>
 		<span class="result"></span>
 	</div>
 </fieldset>
