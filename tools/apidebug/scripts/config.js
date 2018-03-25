@@ -51,7 +51,7 @@ var projects = [
 		"id": "univisionnow",
 		"name": "Univision Now",
 		"domains": [
-			"https://www.univisionnow.com/",
+			"https://www2.univisionnow.com/",
 			"https://univisionnowv2stage.neulion.com/",
 			"https://univisionnowv2.neulion.com/",
 			"https://dev.univisionnow.com/"
