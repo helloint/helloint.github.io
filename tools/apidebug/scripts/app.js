@@ -333,6 +333,7 @@ function addToCache(name, value)
 			if (values[i] == value)
 			{
 				exist = true;
+				// Move current value to front.
 				values.sort(function(x,y){ return x == value ? -1 : y == value ? 1 : 0; });
 				break;
 			}
