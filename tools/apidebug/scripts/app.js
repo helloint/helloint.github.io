@@ -325,7 +325,7 @@ function addToCache(name, value)
 {
 	if (window.localStorage)
 	{
-		var values = JSON.parse(window.localStorage.getItem(name));
+		var values = JSON.parse(window.localStorage.getItem("apidebug_" + name));
 		if (values == null) values = [];
 		var exist = false;
 		for (var i = 0; i < values.length; i++)
@@ -341,7 +341,7 @@ function addToCache(name, value)
 		{
 			values.unshift(value);
 		}
-		window.localStorage.setItem(name, JSON.stringify(values));
+		window.localStorage.setItem("apidebug_" + name, JSON.stringify(values));
 	}
 }
 function getFromCache(name)
@@ -349,7 +349,7 @@ function getFromCache(name)
 	var values = null;
 	if (window.localStorage)
 	{
-		values = JSON.parse(window.localStorage.getItem(name));
+		values = JSON.parse(window.localStorage.getItem("apidebug_" + name));
 		if (values != null && values.length == 0)
 		{
 			values = null;
