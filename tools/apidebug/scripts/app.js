@@ -327,7 +327,20 @@ function addToCache(name, value)
 	{
 		var values = JSON.parse(window.localStorage.getItem(name));
 		if (values == null) values = [];
-		values.unshift(value);
+		var exist = false;
+		for (var i = 0; i < values.length; i++)
+		{
+			if (values[i] == value)
+			{
+				exist = true;
+				values.sort(function(x,y){ return x == value ? -1 : y == value ? 1 : 0; });
+				break;
+			}
+		}
+		if (!exist)
+		{
+			values.unshift(value);
+		}
 		window.localStorage.setItem(name, JSON.stringify(values));
 	}
 }
