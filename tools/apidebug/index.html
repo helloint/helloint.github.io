@@ -18,6 +18,11 @@
 			padding: 0;
 		}
 		input,select,label{vertical-align:middle;}
+		
+		/*Fix jquery-ui aligement issue*/
+		.ui-selectmenu-button {
+			vertical-align: middle;
+		}
 	</style>
 	<link type="text/css" href="styles/jquery-ui.css" rel="stylesheet" />
 	<script src="scripts/jquery-ui.min.js"></script>
@@ -28,8 +33,17 @@
 	<script>
 		$(document).ready(function ()
 		{
+			// Custom selectmenu. It doesn't trigger change event after 'refresh'
+			$.widget("custom.myselectmenu", $.ui.selectmenu, {
+				refresh: function() {
+					$.ui.selectmenu.prototype.refresh.call(this);
+					var item = this._getSelectedItem().data( "ui-selectmenu-item" );
+					this._trigger( "change", event, { item: item } );
+				},
+			});
+			
 			// init data
-			$("#domain").html(domainTmpl({"items": projects}));
+			$("#project").html(projectTmpl({"items": projects}));
 			$("#skuGroups").html(skuGroupTmpl({"items": projects}));
 			$("#email").val($.cookie(emailCookieName)).autocomplete({
 				delay: 0,
@@ -41,7 +55,7 @@
 			$("#addCustomDomain").click(function(){
 				var customDomain = $("#customDomain").val();
 				addCustomDomain(customDomain);
-				domainChanged(customDomain);
+				$("#domain").val(customDomain).myselectmenu("refresh");
 			});
 			$("#login").click(login);
 			$("#logout").click(logout);
@@ -80,25 +94,41 @@
 				collapsible: true,
 				animate: 200
 			});
-			$("#domain").selectmenu({
+			$("#project").myselectmenu({
+				change: function(event, data){
+					projectChanged(data.item.value);
+				},
+			});
+			$("#domain").myselectmenu({
 				change: function(event, data){
 					domainChanged(data.item.value);
 				}
+			});
+			$("#extLink").button({
+				icons: {
+					primary: "ui-icon-extlink",
+				},
+				text: false,
+			}).click(function(){
+				window.open(API.domain);
 			});
 
 			// init status
 			if ($.cookie(domainCookieName) != null)
 			{
 				var cookieDomain = $.cookie(domainCookieName);
-				$("#domain").val(cookieDomain).selectmenu("refresh");
+				var projectId = getIdByDomain(cookieDomain);
 				if (isCustomDomain(cookieDomain)) {
-					addCustomDomain(cookieDomain);
+					$("#customDomain").val(cookieDomain);
+					$("#addCustomDomain").click();
+				} else {
+					$("#project").val(projectId).myselectmenu("refresh");
+					$("#domain").val(cookieDomain).myselectmenu("refresh");
 				}
-				domainChanged(cookieDomain);
 			}
 			else
 			{
-				domainChanged($("#domain").val());
+				$("#project").myselectmenu("refresh");
 			}
 		})
 	</script>
@@ -108,14 +138,20 @@
 <fieldset>
 	<legend>Select Domain</legend>
 	<div class="ui-widget">
+		<select id="project"></select>
+		<script id="projectTmpl" type="text/template">
+			{{#each items}}
+			<option value="{{id}}">{{name}}</option>
+			{{/each}}
+		</script>
+		<script>
+			var projectTmpl = Handlebars.compile($("#projectTmpl").html());
+			$("#projectTmpl").remove();
+		</script>
 		<select id="domain">
 			<script id="domainTmpl" type="text/template">
 				{{#each items}}
-					<!--<optgroup label="{{name}}">-->
-						{{#each domains}}
-							<option value="{{this}}">{{this}}</option>
-						{{/each}}
-					<!--</optgroup>-->
+					<option value="{{this}}">{{this}}</option>
 				{{/each}}
 			</script>
 		</select>
@@ -123,10 +159,11 @@
 			var domainTmpl = Handlebars.compile($("#domainTmpl").html());
 			$("#domainTmpl").remove();
 		</script>
+		<button id="extLink">Open domain in new tab</button>
 		<label for="enableSSL">Enable SSL</label><input type="checkbox" id="enableSSL" checked/>
-		<a id="sslAttempt" href="javascript:void(0);" target="_blank" title="Open SSL page directly to get cerf confirmed first">Hit SSL</a>
+		(<a id="sslAttempt" href="javascript:void(0);" target="_blank" title="Open SSL page directly to get cerf confirmed first">Probe SSL Cert</a>)
 	</div>
-	<div>
+	<div style="margin-top: 8px;">
 		<input id="customDomain" type="text" placeholder="Add Custom Domain"/>
 		<button id="addCustomDomain" class="button">Add</button>
 	</div>

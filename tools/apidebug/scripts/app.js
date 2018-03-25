@@ -120,16 +120,12 @@ function checkProfile()
 	});
 }
 
-function domainChanged(newDomain)
+function projectChanged(id)
 {
-	if (!sslEnabled())
-	{
-		newDomain = newDomain.replace("https://", "http://");
-	}
-	API.domain = newDomain;
-	$.cookie(domainCookieName, API.domain, {expires: 7});
-	$("#sslAttempt").attr("href", API.domain);
-	var id = getIdByDomain(newDomain);
+	var domains = getDomainsByProjectId(id);
+	$("#domain").html(domainTmpl({"items": domains}))
+			.myselectmenu("refresh");
+
 	// only show skus of this domain
 	if ($("#skuGroups li.id_" + id).size() > 0)
 	{
@@ -142,6 +138,16 @@ function domainChanged(newDomain)
 	}
 	$("#skuGroups").accordion("option", "active", $("#skuGroups li.id_" + id).index());
 }
+function domainChanged(newDomain)
+{
+	if (!sslEnabled())
+	{
+		newDomain = newDomain.replace("https://", "http://");
+	}
+	API.domain = newDomain;
+	$.cookie(domainCookieName, API.domain, {expires: 7});
+	$("#sslAttempt").attr("href", API.domain);
+}
 
 function getIdByDomain(domain)
 {
@@ -153,6 +159,18 @@ function getIdByDomain(domain)
 			{
 				return projects[i].id;
 			}
+		}
+	}
+	return null;
+}
+
+function getDomainsByProjectId(projectId)
+{
+	for (var i = 0; i < projects.length; i++)
+	{
+		if (projects[i].id == projectId)
+		{
+			return projects[i].domains;
 		}
 	}
 	return null;
@@ -191,9 +209,28 @@ function addCustomDomain(newDomain)
 	{
 		$("#domain .custom").remove();
 	}
-	$("#domain").prepend("<option value='" + newDomain + "' class='custom'>" + newDomain + "</option>")
-			.val(newDomain);
-	$("#domain").selectmenu("refresh");
+	var customProject = null;
+	for (var i = 0; i < projects.length; i++)
+	{
+		if (projects[i].id == "custom")
+		{
+			customProject = projects[i];
+			break;
+		}
+	}
+	if (customProject == null)
+	{
+		customProject = {
+			"id": "custom",
+			"name": "Custom",
+			"domains": [],
+			"skus": [],
+		};
+		projects.unshift(customProject);
+		$("#project").html(projectTmpl({"items": projects}));
+	}
+	customProject['domains'].unshift(newDomain);
+	$("#project").val("custom").myselectmenu("refresh");
 }
 function sslEnabled()
 {
