@@ -48,6 +48,18 @@ var projects = [
 		]
 	},
 	{
+		"id": "novaplay",
+		"name": "Nova Play",
+		"domains": [
+			"https://play.nova.bg/",
+			"https://novaplaystage.neulion.com/",
+			"https://novaplayqa.neulion.com/",
+			"https://novaplaydev.neulion.com/"
+		],
+		"skus": [
+		]
+	},
+	{
 		"id": "univisionnow",
 		"name": "Univision Now",
 		"domains": [
