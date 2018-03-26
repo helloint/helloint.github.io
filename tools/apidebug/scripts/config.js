@@ -110,7 +110,7 @@ var projects = [
 	},
 	{
 		"id": "diemaxtra",
-		"name": "DiemaXtra",
+		"name": "DiemaXtra (Nova Sports)",
 		"domains": [
 			"https://play.diemaxtra.bg/",
 			"https://diemaxtrastage.neulion.com/",
