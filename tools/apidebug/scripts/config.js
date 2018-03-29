@@ -41,6 +41,7 @@ var projects = [
 		"name": "NeuLion TV",
 		"domains": [
 			"https://nltv.neulion.com/",
+			"https://nltvstage.neulion.com/",
 			"https://nltvdev.neulion.com/"
 		],
 		"skus": [
