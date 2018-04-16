@@ -88,7 +88,6 @@
 			$("#userIdDecode").click(userIdDecode);
 			
 			// init UI
-			$("#sslAttempt").tooltip();
 			$(".button").button();
 			$("#skuGroups li").buttonset();
 			$("#skuGroups").accordion({
@@ -161,8 +160,7 @@
 			$("#domainTmpl").remove();
 		</script>
 		<button id="extLink">Open domain in new tab</button>
-		<label for="enableSSL">Enable SSL</label><input type="checkbox" id="enableSSL" checked/>
-		(<a id="sslAttempt" href="javascript:void(0);" target="_blank" title="Open SSL page directly to get cerf confirmed first">Probe SSL Cert</a>)
+		<label for="enableSSL">SSL</label><input type="checkbox" id="enableSSL" checked/>
 	</div>
 	<div style="margin-top: 8px;">
 		<input id="customDomain" type="text" placeholder="Add Custom Domain"/>

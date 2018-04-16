@@ -89,7 +89,7 @@ var projects = [
 		"id": "ivyleague",
 		"name": "IvyLeague",
 		"domains": [
-			"http://www.ivyleaguenetwork.com/",
+			"https://www.ivyleaguenetwork.com/",
 			"https://ivyleaguestage.neulion.com/",
 			"https://dev.ivyleague.tv/"
 		],
@@ -294,8 +294,9 @@ var projects = [
 		"id": "euroleague",
 		"name": "Euro League",
 		"domains": [
-			"http://dev1.euroleague.com/",
-			"https://euroleaguestage.neulion.com/"
+			"https://dev1.euroleague.com/",
+			"https://euroleaguestage.neulion.com/",
+			"https://www.euroleague.tv/"
 		],
 		"skus": [
 			"BSEASON", "BMONTHLY"

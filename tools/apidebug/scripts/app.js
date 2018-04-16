@@ -146,7 +146,6 @@ function domainChanged(newDomain)
 	}
 	API.domain = newDomain;
 	$.cookie(domainCookieName, API.domain, {expires: 7});
-	$("#sslAttempt").attr("href", API.domain);
 }
 
 function getIdByDomain(domain)
