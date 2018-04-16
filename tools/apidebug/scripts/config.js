@@ -162,7 +162,8 @@ var projects = [
 		"name": "ETN Live",
 		"domains": [
 			"https://dev1.etnlive.com/",
-			"https://etnlive.neulion.com/"
+			"https://etnlive.neulion.com/",
+			"https://www.etnlive.com/"
 		],
 		"skus": [
 			"PANNUAL", "PMONTHLY"
