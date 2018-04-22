@@ -37,6 +37,17 @@ var projects = [
 		]
 	},
 	{
+		"id": "sgp",
+		"name": "SGP TV",
+		"domains": [
+			"https://sgpqa.neulion.com/",
+			"https://sgpdev.neulion.com/"
+		],
+		"skus": [
+			"PSGPSEASON", "PSGPPPV"
+		]
+	},
+	{
 		"id": "nltv",
 		"name": "NeuLion TV",
 		"domains": [
