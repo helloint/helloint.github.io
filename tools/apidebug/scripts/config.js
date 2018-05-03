@@ -44,7 +44,7 @@ var projects = [
 			"https://sgpdev.neulion.com/"
 		],
 		"skus": [
-			"PSGPSEASON", "PSGPPPV"
+			"BSGPSEASON", "PSGPPPV"
 		]
 	},
 	{
