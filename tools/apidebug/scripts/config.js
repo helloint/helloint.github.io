@@ -40,6 +40,7 @@ var projects = [
 		"id": "sgp",
 		"name": "SGP TV",
 		"domains": [
+			"https://speedwaygp.neulion.com/",
 			"https://sgpqa.neulion.com/",
 			"https://sgpdev.neulion.com/"
 		],
