@@ -39,7 +39,7 @@
 				refresh: function() {
 					$.ui.selectmenu.prototype.refresh.call(this);
 					var item = this._getSelectedItem().data( "ui-selectmenu-item" );
-					this._trigger( "change", event, { item: item } );
+					this._trigger( "change", null, { item: item } );
 				},
 			});
 			
