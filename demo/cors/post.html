@@ -5,9 +5,10 @@
 	<title>Title</title>
 </head>
 <body>
-<form action="https://watch.nba.com/" method="post">
+<form id="myForm" name="myForm" action="https://watch.nba.com/" method="post">
 	<input type="hidden" name="token" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg3MTk0NDgsImV4cCI6MTYwODcyNjY0OCwiYXVkIjoibmJhIiwianRpIjoiYzE1ZGM3MjYwNTUxM2RlNjM2OTY4ZTVhN2YwMDAwMDEiLCJpc3MiOiJuYmEifQ.mwaimXLpsqpzZ-AokVsC7cfPx7CyJPHvusp6xC7FVxoeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg3MTk0NDgsImV4cCI6MTYwODcyNjY0OCwiYXVkIjoibmJhIiwianRpIjoiYzE1ZGM3MjYwNTUxM2RlNjM2OTY4ZTVhN2YwMDAwMDEiLCJpc3MiOiJuYmEifQ.mwaimXLpsqpzZ-AokVsC7cfPx7CyJPHvusp6xC7FVxoeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg3MTk0NDgsImV4cCI6MTYwODcyNjY0OCwiYXVkIjoibmJhIiwianRpIjoiYzE1ZGM3MjYwNTUxM2RlNjM2OTY4ZTVhN2YwMDAwMDEiLCJpc3MiOiJuYmEifQ.mwaimXLpsqpzZ-AokVsC7cfPx7CyJPHvusp6xC7FVxoeyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE2MDg3MTk0NDgsImV4cCI6MTYwODcyNjY0OCwiYXVkIjoibmJhIiwianRpIjoiYzE1ZGM3MjYwNTUxM2RlNjM2OTY4ZTVhN2YwMDAwMDEiLCJpc3MiOiJuYmEifQ.mwaimXLpsqpzZ-AokVsC7cfPx7CyJPHvusp6xC7FVxo"/>
 	<input type="submit"/>
+	<input type="button" value="delay submit" onclick="if (document.getElementById('myForm')) {setTimeout(function(){document.getElementById('myForm').submit()}, 2000);}"/>
 </form>
 </body>
 </html>
