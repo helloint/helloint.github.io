@@ -2,6 +2,9 @@
 	"applinks": {
 		"apps": [],
 		"details": [{
+			"appID": "5T399WZU5J.com.univision.univisionnow",
+			"paths": ["/univisionnow/*"]
+		},{
 			"appID": "U6786GWMP7.com.univision.iphone",
 			"paths": ["/univisiontve/*"]
 		}]
