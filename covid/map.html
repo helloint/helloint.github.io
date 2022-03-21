@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript" src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=FOghoenHAy69lWj3HgkVW5kz4IRgbQSi"></script>
+    <title>上海疫情地图</title>
+    <style>
+        body,html{width: 100%;height: 100%;padding: 0;margin: 0;}
+        #container{width: 100%;height: 100%;overflow: hidden;}
+        #container .BMapLabel {display: none !important;}
+        .show-maptip #container .BMapLabel {display: block !important;}
+        #title {z-index: 5; color: red; background-color: #fff; position: fixed; top: 10px; left: 50%; transform: translate(-50%, 0);text-shadow: 2px 2px 4px #fff;border: 2px solid red; border-radius: 4px; padding: 0px 4px;}
+        #date-selector {font-size: 20px; color: blue; position: fixed; top: 10px; right: 10px; z-index: 5;}
+    </style>
+    <script>
+        function getUrlParameter(name){
+            name = name.replace(/[]/,"\[").replace(/[]/,"\[").replace(/[]/,"\\\]");
+            var regexS = "[\\?&]"+name+"=([^&#]*)";
+            var regex = new RegExp( regexS );
+            var results = regex.exec(window.parent.location.href );
+            if( results == null ) return ""; else {
+                return results[1];
+            }
+        }
+        function getHashParameter(key){
+            var params = getHashParameters();
+            return params[key];
+        }
+
+        function getHashParameters(){
+            var arr = (location.hash || "").replace(/^\#/,'').split("&");
+            var params = {};
+            for(var i=0; i<arr.length; i++){
+                var data = arr[i].split("=");
+                if(data.length == 2){
+                    params[data[0]] = data[1];
+                }
+            }
+            return params;
+        }
+
+        function parseDate(date) {
+            var yyyy = date.getFullYear();
+            var mm = date.getMonth() + 1;
+            mm = mm >= 10 ? mm : '0' + mm;
+            var dd = date.getDate();
+            dd = dd >= 10 ? dd : '0' + dd;
+            return `${yyyy}-${mm}-${dd}`;
+        }
+    </script>
+</head>
+<body>
+<div id='container'></div>
+<div id='points'></div>
+<div id='title'></div>
+<select id='date-selector'>
+    <script>
+        var date = new Date();
+        date.setDate(date.getDate()-1); // 第二天才知道前一天的数据
+        var beginDate = new Date(2022, 2, 6, 0, 0, 0);
+        while(date > beginDate) {
+            document.write(`<option>${parseDate(date)}</option>`);
+            date.setDate(date.getDate()-1);
+        }
+    </script>
+</select>
+<script>
+    var map = new BMapGL.Map('container');
+    map.centerAndZoom(new BMapGL.Point(121.5,31.23), 12);
+    map.enableScrollWheelZoom(true);
+    var myGeo = new BMapGL.Geocoder();
+    function mark(addresses) {
+        map.clearOverlays();
+        addresses.forEach((address) => {
+            myGeo.getPoint(address, function(point) {
+                if (point) {
+                    var marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat));
+                    marker.setIcon(new BMapGL.Icon('icon.svg',
+                        new BMapGL.Size(15, 15)
+                    ));
+                    var label = new BMapGL.Label(address, {offset:new BMapGL.Size(address.length * -5,-35)});
+                    marker.setLabel(label);
+                    map.addOverlay(marker);
+                }
+            }, "上海市");
+        });
+    }
+    map.addEventListener('click', function (e) {
+        console.log(`['', ${e.point.lng}, ${e.point.lat}],`);
+    });
+    map.addEventListener("zoomend", function () {
+        //这里根据缩放显示和隐藏文本
+        var currentZoom = this.getZoom();
+        console.log(`currentZoom: ${currentZoom}`);
+        document.body.className = currentZoom<=13?'':'show-maptip';
+    });
+    function fetchData(date) {
+        fetch(`data/${date}.json`)
+            .then(response => response.json())
+            .then(json => mark(json))
+            .then(() => {
+                document.getElementById('title').innerText = date;
+            });
+    }
+    function playData() {
+        // from 3/6 to currentData
+    }
+    function renderUI() {
+        var currentData = getHashParameter("date");
+        if (currentData) {
+            fetchData(currentData);
+        } else {
+            var d = new Date();
+            d.setDate(d.getDate()-1); // 第二天才知道前一天的数据
+            fetchData(parseDate(d));
+        }
+    }
+    window.addEventListener("hashchange", function(e) {
+        renderUI();
+    },false);
+    document.getElementById("date-selector").addEventListener("change", function (e) {
+        location.hash = '#date=' + e.target.value;
+    });
+</script>
+<script>renderUI();</script>
+</body>
+</html>
