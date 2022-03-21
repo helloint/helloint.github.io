@@ -67,10 +67,28 @@
 </select>
 <script>
     var map = new BMapGL.Map('container');
-    map.centerAndZoom(new BMapGL.Point(121.5,31.23), 12);
+    map.centerAndZoom(new BMapGL.Point(121.40003152077978, 31.152492021564836), 15);
     map.enableScrollWheelZoom(true);
-    var myGeo = new BMapGL.Geocoder();
+    map.addEventListener('click', function (e) {
+        console.log(`'${e.latlng.lng}, ${e.latlng.lat}',`);
+    });
+    map.addEventListener("zoomend", function () {
+        //这里根据缩放显示和隐藏文本
+        var currentZoom = this.getZoom();
+        console.log(`currentZoom: ${currentZoom}`);
+        document.body.className = currentZoom<=13?'':'show-maptip';
+    });
+    window.addEventListener("hashchange", function(e) {
+        renderUI();
+    },false);
+    document.getElementById("date-selector").addEventListener("change", function (e) {
+        location.hash = '#date=' + e.target.value;
+    });
+
+    drawRegion();
+
     function mark(addresses) {
+        var myGeo = new BMapGL.Geocoder();
         map.clearOverlays();
         addresses.forEach((address) => {
             myGeo.getPoint(address, function(point) {
@@ -86,15 +104,7 @@
             }, "上海市");
         });
     }
-    map.addEventListener('click', function (e) {
-        console.log(`['', ${e.point.lng}, ${e.point.lat}],`);
-    });
-    map.addEventListener("zoomend", function () {
-        //这里根据缩放显示和隐藏文本
-        var currentZoom = this.getZoom();
-        console.log(`currentZoom: ${currentZoom}`);
-        document.body.className = currentZoom<=13?'':'show-maptip';
-    });
+
     function fetchData(date) {
         fetch(`data/${date}.json`)
             .then(response => response.json())
@@ -104,7 +114,7 @@
             });
     }
     function playData() {
-        // from 3/6 to currentData
+        // TODO: from 3/6 to currentData
     }
     function renderUI() {
         var currentData = getHashParameter("date");
@@ -116,12 +126,51 @@
             fetchData(parseDate(d));
         }
     }
-    window.addEventListener("hashchange", function(e) {
-        renderUI();
-    },false);
-    document.getElementById("date-selector").addEventListener("change", function (e) {
-        location.hash = '#date=' + e.target.value;
-    });
+
+    function drawRegion() {
+        const mhgmPoints = [
+            '121.39241389005508, 31.132216640486455',
+            '121.40089389406927, 31.134565825251777',
+            '121.39794745199654, 31.14618724327117',
+            '121.40283423397084, 31.1476707250151',
+            '121.40642745601075, 31.150019523163248',
+            '121.40764915150432, 31.14612543102309',
+            '121.40973322028746, 31.142416621658082',
+            '121.41332644232737, 31.145012803597826',
+            '121.41763830877527, 31.147979780760934',
+            '121.41555423999212, 31.152924534305047',
+            '121.41142688238527, 31.16264454059467',
+            '121.40753432993613, 31.16110763231265',
+            '121.40804844063696, 31.15965491503754',
+            '121.40354385163918, 31.158454827279634',
+            '121.40244218585168, 31.161633973600157',
+            '121.41075088273135, 31.1642214194727',
+            '121.40915480878355, 31.168094995940333',
+            '121.40113897073469, 31.16534995826335',
+            '121.40227395665312, 31.16181179120905',
+            '121.39460811802951, 31.15976018516121',
+            '121.39380022978534, 31.16291823394902',
+            '121.3915234538245, 31.162623487226636',
+            '121.38861015985314, 31.16289718064242',
+            '121.38366490454038, 31.16348667144135',
+            '121.38564097214818, 31.159131704292296',
+            '121.38699438336481, 31.153148992207377',
+            '121.38745568503221, 31.14989577548822',
+            '121.38797117423616, 31.143134194618284',
+            '121.38817907322002, 31.1404245848964',
+            '121.38845069255491, 31.139613652668274',
+            '121.39004441689426, 31.136567171561197',
+            '121.3925678137649, 31.131997264593217',
+        ];
+        var region = new BMapGL.Polygon([mhgmPoints.join(';')], {
+            strokeWeight: 1,
+            fillColor: 'blue',
+            fillOpacity: 0.05
+        });
+        // https://www.jb51.net/article/133766.htm
+        region.disableMassClear();
+        map.addOverlay(region);
+    }
 </script>
 <script>renderUI();</script>
 </body>
