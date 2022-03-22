@@ -97,6 +97,7 @@
     drawRegion();
 
     function mark(addresses, clear = true) {
+        console.log(`clear: ${clear}`);
         clear && map.clearOverlays();
         addresses.forEach((address) => {
             getPoint(address, function(point) {
@@ -152,9 +153,13 @@
                 } else {
                     clearInterval(iid);
                     selector.disabled = false;
-                    PLAYING = false;
+                    // FIXME: why this execute before the event trigger? use timeout to workaround
+                    setTimeout(()=>{
+                        PLAYING = false;
+                    }, 500);
+                    document.getElementById("playBtn").src = 'play.svg';
                 }
-            }, 1000);
+            }, 500);
         } else {
             clearInterval(iid);
             selector.disabled = false;
