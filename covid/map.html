@@ -97,7 +97,7 @@
     drawRegion();
 
     function mark(addresses, clear = true) {
-        console.log(`clear: ${clear}`);
+        // console.log(`clear: ${clear}`);
         clear && map.clearOverlays();
         addresses.forEach((address) => {
             getPoint(address, function(point) {
@@ -144,12 +144,12 @@
             map.clearOverlays();
             // https://stackoverflow.com/a/368834/8175165
             selector.disabled = true;
-            var index = selector.options.length - 1;
+            var index = selector.selectedIndex;
             iid = setInterval(()=>{
-                selector.selectedIndex = index;
-                selector.dispatchEvent(new Event('change'));
-                if (index > 0) {
-                    index = index - 1;
+                index = index - 1;
+                if (index >= 0) {
+                    selector.selectedIndex = index;
+                    selector.dispatchEvent(new Event('change'));
                 } else {
                     clearInterval(iid);
                     selector.disabled = false;
@@ -161,6 +161,7 @@
                 }
             }, 500);
         } else {
+            // Stop
             clearInterval(iid);
             selector.disabled = false;
             PLAYING = false;
