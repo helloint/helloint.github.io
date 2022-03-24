@@ -4,21 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-state-machine@3.1.0/lib/state-machine.min.js"></script>
     <script type="text/javascript" src="https://api.map.baidu.com/api?type=webgl&v=1.0&ak=FOghoenHAy69lWj3HgkVW5kz4IRgbQSi"></script>
     <script type="text/javascript" src="data/cache.js"></script>
     <title>上海疫情地图</title>
     <style>
-        body,html{width: 100%;height: 100%;padding: 0;margin: 0;}
-        #container{width: 100%;height: 100%;overflow: hidden;}
+        body,html {width: 100%; height: 100%; padding: 0; margin: 0;}
+        h1 {margin: 0;}
+        #container {width: 100%; height: 100%; overflow: hidden;}
         #container .BMapLabel {display: none !important;}
         .show-maptip #container .BMapLabel {display: block !important;}
         #title {z-index: 5; font-size: 22px; color: blue; background-color: #fff; position: fixed; top: 10px; left: 50%; transform: translate(-50%, 0);text-shadow: 2px 2px 4px #fff;border: 2px solid blue; border-radius: 4px; padding: 0px 4px;}
         #controller {position: fixed; bottom: 10px; right: 10px; z-index: 5; display: flex; flex-direction: row;}
-        #stopBtn {display: none;}
+        #stopBtn, #pauseBtn, #resumeBtn {display: none;}
         .controlBtn {cursor: pointer; margin-top: 6px; width: 30px; height: 30px; filter: invert(8%) sepia(100%) saturate(7356%) hue-rotate(248deg) brightness(99%) contrast(144%);}
         #date-selector {font-size: 22px; color: blue;}
+        #view-controller {position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; flex-direction: row; font-size: 22px;}
     </style>
     <script>
+        // Util Functions
         function getHashParameter(key){
             var params = getHashParameters();
             return params[key];
@@ -80,13 +84,54 @@
         </script>
     </select>
 </div>
+<div id="view-controller">
+    <span><button id="showEstates">显示解封小区</button></span>
+</div>
 <script>
     const mapCenter = [121.40003152077978, 31.152492021564836];
     const mapZoom = 15;
-    const zoomToDisplayLabel = 13;
+    const zoomToDisplayLabel = 15;
+    // 闵行古美街道区域
+    const mhgmPoints = [
+        '121.39241389005508, 31.132216640486455',
+        '121.40089389406927, 31.134565825251777',
+        '121.39794745199654, 31.14618724327117',
+        '121.40283423397084, 31.1476707250151',
+        '121.40642745601075, 31.150019523163248',
+        '121.40764915150432, 31.14612543102309',
+        '121.40973322028746, 31.142416621658082',
+        '121.41332644232737, 31.145012803597826',
+        '121.41763830877527, 31.147979780760934',
+        '121.41555423999212, 31.152924534305047',
+        '121.41142688238527, 31.16264454059467',
+        '121.40753432993613, 31.16110763231265',
+        '121.40804844063696, 31.15965491503754',
+        '121.40354385163918, 31.158454827279634',
+        '121.40244218585168, 31.161633973600157',
+        '121.41075088273135, 31.1642214194727',
+        '121.40915480878355, 31.168094995940333',
+        '121.40113897073469, 31.16534995826335',
+        '121.40227395665312, 31.16181179120905',
+        '121.39460811802951, 31.15976018516121',
+        '121.39380022978534, 31.16291823394902',
+        '121.3915234538245, 31.162623487226636',
+        '121.38861015985314, 31.16289718064242',
+        '121.38366490454038, 31.16348667144135',
+        '121.38564097214818, 31.159131704292296',
+        '121.38699438336481, 31.153148992207377',
+        '121.38745568503221, 31.14989577548822',
+        '121.38797117423616, 31.143134194618284',
+        '121.38817907322002, 31.1404245848964',
+        '121.38845069255491, 31.139613652668274',
+        '121.39004441689426, 31.136567171561197',
+        '121.3925678137649, 31.131997264593217',
+    ];
+    // 第一，二批解封小区
+    const estateNames = ["成亿家园","古美公寓","金领华庭","和嘉公寓","万源城御溪","华梅花苑","春意苑","古美三村","同济华城(一期)","同济华城(二期)","馨古美佳苑（公租房）","东兰路37弄","梅莲苑","万源城逸郡","华城花苑","合成、龙茗公寓","龙祥嘉园","平阳苑","仲义苑","春江锦庐","万源城E1街坊","古美十村","阳光美景城（东）","东苑怡景园","万源城御境","九星苑","平阳三村","古美一村"];
+    // const estateNames = ["成亿家园"];
 
     const map = new BMapGL.Map('container');
-    const myGeo = new BMapGL.Geocoder();
+    const mapGeo = new BMapGL.Geocoder();
     map.centerAndZoom(new BMapGL.Point(...mapCenter), mapZoom);
     map.enableScrollWheelZoom(true);
     map.addEventListener('click', function (e) {
@@ -104,49 +149,20 @@
     $('#date-selector').change(function (e) {
         setHashParameter('date', e.target.value);
     });
-
-    $(()=>{
-        renderUI();
-        drawRegion();
-        Controller.init();
+    $('#showEstates').click(function (e) {
+        // 画小区区域图
+        drawEstate(estateNames);
+        $(this).hide();
     });
 
-    function mark(addresses) {
-        Controller.state === 0 && map.clearOverlays();
-        addresses.forEach((address) => {
-            getPoint(address, function(point) {
-                if (point) {
-                    var marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat));
-                    marker.setIcon(new BMapGL.Icon('icon.svg',
-                        new BMapGL.Size(15, 15)
-                    ));
-                    var label = new BMapGL.Label(address, {offset: new BMapGL.Size(address.length * -5,-35)});
-                    marker.setLabel(label);
-                    map.addOverlay(marker);
-                }
-            });
-        });
-    }
 
-    function getPoint(address, callback) {
-        if (pointCache.has(address)) {
-            callback(pointCache.get(address));
-        } else {
-            myGeo.getPoint(address, (point)=>{
-                pointCache.set(address, point);
-                callback(point);
-            }, "上海市");
-        }
-    }
+    $(()=>{
+        // 画街道底图
+        drawRegion(mhgmPoints);
 
-    function fetchData(date) {
-        fetch(`data/${date}.json`)
-            .then(response => response.json())
-            .then(json => mark(json))
-            .then(() => {
-                document.getElementById('title').innerText = date;
-            });
-    }
+        Controller.init();
+        renderUI();
+    });
 
     /*
     state:
@@ -164,6 +180,27 @@
     2 -> 1 resume() -> play()
     3 -> 0 reset()  -> stop(true)
      */
+    var fsm = new StateMachine({
+        init: 'stopped',
+        transitions: [
+            { name: 'play',     from: 'stopped',    to: 'playing' },
+            { name: 'pause',    from: 'playing',    to: 'paused'  },
+            { name: 'resume',   from: 'paused',     to: 'playing' },
+            { name: 'end',      from: 'playing',    to: 'ended'   },
+            { name: 'stop',     from: 'playing',    to: 'stopped' },
+            { name: 'revert',    from: 'paused',     to: 'stopped' },
+            { name: 'reset',    from: 'ended',      to: 'stopped' }
+        ],
+        methods: {
+            onPlay:     function() { console.log('onPlay')      },
+            onPause:    function() { console.log('onPause')     },
+            onResume:   function() { console.log('onResume')    },
+            onEnd:      function() { console.log('onEnd')       },
+            onStop:     function() { console.log('onStop')      },
+            onRevert:   function() { console.log('onRevert')    },
+            onReset:    function() { console.log('onReset')     }
+        }
+    });
     const Controller = {
 
         // 当前状态
@@ -273,61 +310,168 @@
     };
 
     function renderUI() {
-        var currentData = getHashParameter("date");
-        if (currentData) {
-            fetchData(currentData);
-        } else {
+        var currentDate = getHashParameter("date");
+        if (!currentDate) {
             var d = new Date();
             d.setDate(d.getDate()-1); // 第二天才知道前一天的数据
-            fetchData(parseDate(d));
+            currentDate = parseDate(d);
+        }
+        fetchData(currentDate, function(data) {
+            renderData(currentDate, data);
+        });
+    }
+
+    function renderData(date, data) {
+        drawPoints(data, Controller.state === 0);
+        document.getElementById('title').innerText = date;
+    }
+
+    function drawPoints(addresses, reset = false) {
+        reset && map.clearOverlays();
+        addresses.forEach((address) => {
+            getPoint(address, function(point) {
+                if (point) {
+                    var marker = new BMapGL.Marker(new BMapGL.Point(point.lng, point.lat));
+                    marker.setIcon(new BMapGL.Icon('icon.svg',
+                        new BMapGL.Size(15, 15)
+                    ));
+                    var label = new BMapGL.Label(address, {offset: new BMapGL.Size(address.length * -5,-35)});
+                    marker.setLabel(label);
+                    map.addOverlay(marker);
+                }
+            });
+        });
+    }
+
+    /**
+     * 把地址转换成latlng坐标
+     * 调用了百度地图API实现的, 然后另外增加了一层缓存, 否则会影响画点的渲染速度
+     * @param address "永泰路630弄"
+     * @param callback {"lng":121.52411305537956,"lat":31.145365857319558}
+     */
+    function getPoint(address, callback) {
+        if (pointCache.has(address)) {
+            callback(pointCache.get(address));
+        } else {
+            mapGeo.getPoint(address, (point)=>{
+                pointCache.set(address, point);
+                callback(point);
+            }, "上海市");
         }
     }
 
-    const mhgmPoints = [
-        '121.39241389005508, 31.132216640486455',
-        '121.40089389406927, 31.134565825251777',
-        '121.39794745199654, 31.14618724327117',
-        '121.40283423397084, 31.1476707250151',
-        '121.40642745601075, 31.150019523163248',
-        '121.40764915150432, 31.14612543102309',
-        '121.40973322028746, 31.142416621658082',
-        '121.41332644232737, 31.145012803597826',
-        '121.41763830877527, 31.147979780760934',
-        '121.41555423999212, 31.152924534305047',
-        '121.41142688238527, 31.16264454059467',
-        '121.40753432993613, 31.16110763231265',
-        '121.40804844063696, 31.15965491503754',
-        '121.40354385163918, 31.158454827279634',
-        '121.40244218585168, 31.161633973600157',
-        '121.41075088273135, 31.1642214194727',
-        '121.40915480878355, 31.168094995940333',
-        '121.40113897073469, 31.16534995826335',
-        '121.40227395665312, 31.16181179120905',
-        '121.39460811802951, 31.15976018516121',
-        '121.39380022978534, 31.16291823394902',
-        '121.3915234538245, 31.162623487226636',
-        '121.38861015985314, 31.16289718064242',
-        '121.38366490454038, 31.16348667144135',
-        '121.38564097214818, 31.159131704292296',
-        '121.38699438336481, 31.153148992207377',
-        '121.38745568503221, 31.14989577548822',
-        '121.38797117423616, 31.143134194618284',
-        '121.38817907322002, 31.1404245848964',
-        '121.38845069255491, 31.139613652668274',
-        '121.39004441689426, 31.136567171561197',
-        '121.3925678137649, 31.131997264593217',
-    ];
+    function fetchData(date, callback) {
+        fetch(`data/${date}.json`)
+            .then(response => response.json())
+            .then(json => callback(json));
+    }
 
-    function drawRegion() {
-        var region = new BMapGL.Polygon([mhgmPoints.join(';')], {
+    // 绘制行政边界图
+    function drawRegion(points) {
+        var polygon = new BMapGL.Polygon([points.join(';')], {
             strokeWeight: 1,
             fillColor: 'blue',
             fillOpacity: 0.05
         });
         // avoid being cleared after `map.clearOverlays()` https://www.jb51.net/article/133766.htm
-        region.disableMassClear();
-        map.addOverlay(region);
+        polygon.disableMassClear();
+        map.addOverlay(polygon);
     }
+
+    // 绘制小区边界图
+    function drawEstate(names){
+        const local = new BMapGL.LocalSearch(map, {
+            // Doc: https://mapopen-pub-jsapi.bj.bcebos.com/jsapi/reference/jsapi_webgl_1_0.html#a8b3
+            renderOptions:{
+                map: map,
+                autoViewport: false,    // 关闭自动聚焦定位到搜索结果
+            },
+        });
+        local.setMarkersSetCallback(function(pois){
+            var marker = new BMapGL.Marker(pois[0].point);
+            marker.setIcon(new BMapGL.Icon('smile.png',
+                new BMapGL.Size(15, 15)
+            ));
+            var label = new BMapGL.Label(pois[0].title, {offset: new BMapGL.Size(pois[0].title.length * -5,-35)});
+            marker.setLabel(label);
+            marker.disableMassClear();
+            map.addOverlay(marker);
+
+            //根据获取到的poi id，查询边界坐标集合，画多边形
+            var uid = pois[0].uid;
+            queryUid(uid);
+
+            // FIXME: 这个API会抛个异常
+            local.clearResults();
+        });
+        names.forEach((info) => {
+            local.search(info);
+        })
+    }
+
+    // 获取小区信息
+    function queryUid(uid){
+        $.ajax({
+            async: false,
+            url:"http://map.baidu.com/?pcevaname=pc4.1&qt=ext&ext_ver=new&l=12&uid="+uid,
+            dataType:'jsonp',
+            jsonp:'callback',
+            success:function(result) {
+                content = result.content;
+                if(null != content.geo){
+                    var geo = content.geo;
+                    var points = coordinateToPoints(geo);
+                    //point分组，得到多边形的每一个点，画多边形
+                    if (points && points.indexOf(";") >= 0) {
+                        points = points.split(";");
+                    }
+                    var arr=[];
+                    for (var i=0;i<points.length-1;i++){
+                        var temp = points[i].split(",");
+                        arr.push(new BMapGL.Point(parseFloat(temp[0]),parseFloat(temp[1])));
+                    }
+                    var polygon = new BMapGL.Polygon(arr, {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});  //创建多边形
+                    polygon.disableMassClear();
+                    map.addOverlay(polygon);   //增加多边形
+                }
+            },
+            timeout:3000
+        });
+    }
+
+    // 提取百度米坐标字符串，转为经纬度坐标串
+    function coordinateToPoints(coordinate) {
+        var points ="";
+        if (coordinate) {
+            if (coordinate && coordinate.indexOf("-") >= 0) {
+                coordinate = coordinate.split('-');
+            }
+            //取点集合
+            var tempco = coordinate[1];
+            if (tempco && tempco.indexOf(",") >= 0) {
+                tempco = tempco.replace(";","").split(",");
+            }
+            //分割点，两个一组，组成百度米制坐标
+            var temppoints=[];
+            for(var i = 0, len = tempco.length; i < len; i++){
+                var obj = new Object();
+                obj.lng=tempco[i];
+                obj.lat=tempco[i+1];
+                temppoints.push(obj);
+                i++;
+            }
+            var projection = map.getProjection();
+            //遍历米制坐标，转换为经纬度
+            for ( var i = 0, len = temppoints.length; i < len; i++) {
+                //var pos = coordinate[i].split(',');
+                var pos = temppoints[i];
+                var point = projection.pointToLngLat(new BMapGL.Pixel(pos.lng, pos.lat));
+                points += ([ point.lng, point.lat ].toString() + ";");
+            }
+        }
+        return points;
+    }
+
 </script>
 </body>
 </html>
