@@ -19,7 +19,8 @@
         #stopBtn, #pauseBtn, #resumeBtn {display: none;}
         .controlBtn {cursor: pointer; margin-top: 6px; width: 30px; height: 30px; filter: invert(8%) sepia(100%) saturate(7356%) hue-rotate(248deg) brightness(99%) contrast(144%);}
         #date-selector {font-size: 22px; color: blue;}
-        #view-controller {position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; flex-direction: row; font-size: 22px;}
+        #view-controller {position: fixed; bottom: 10px; left: 10px; z-index: 100; display: flex; flex-direction: row;}
+        #show-estates {font-size: 22px;}
     </style>
     <script>
         // Util Functions
@@ -85,7 +86,7 @@
     </select>
 </div>
 <div id="view-controller">
-    <span><button id="showEstates">显示解封小区</button></span>
+    <span><button id="show-estates">显示解封小区</button></span>
 </div>
 <script>
     const mapCenter = [121.40003152077978, 31.152492021564836];
@@ -127,7 +128,7 @@
         '121.3925678137649, 31.131997264593217',
     ];
     // 第一，二批解封小区
-    const estateNames = ["成亿家园","古美公寓","金领华庭","和嘉公寓","万源城御溪","华梅花苑","春意苑","古美三村","同济华城(一期)","同济华城(二期)","馨古美佳苑（公租房）","东兰路37弄","梅莲苑","万源城逸郡","华城花苑","合成、龙茗公寓","龙祥嘉园","平阳苑","仲义苑","春江锦庐","万源城E1街坊","古美十村","阳光美景城（东）","东苑怡景园","万源城御境","九星苑","平阳三村","古美一村"];
+    const estateNames = ["成亿家园","古美公寓","金领华庭","和嘉公寓","万源城御溪","华梅花苑","春意苑","古美三村","同济华城(一期)","同济华城(二期)","馨古美佳苑（公租房）","东兰路37弄小区","梅莲苑","万源城逸郡","华城花苑","合成、龙茗公寓","龙祥嘉园","平阳苑","仲义苑","春江锦庐","万源城一期","古美十村","阳光美景城-东区","东苑怡景园","万源城御境","九星苑","平阳三村","古美一村"];
     // const estateNames = ["成亿家园"];
 
     const map = new BMapGL.Map('container');
@@ -149,7 +150,7 @@
     $('#date-selector').change(function (e) {
         setHashParameter('date', e.target.value);
     });
-    $('#showEstates').click(function (e) {
+    $('#show-estates').click(function (e) {
         // 画小区区域图
         drawEstate(estateNames);
         $(this).hide();
@@ -413,7 +414,7 @@
     function queryUid(uid){
         $.ajax({
             async: false,
-            url:"http://map.baidu.com/?pcevaname=pc4.1&qt=ext&ext_ver=new&l=12&uid="+uid,
+            url:"https://map.baidu.com/?pcevaname=pc4.1&qt=ext&ext_ver=new&l=12&uid="+uid,
             dataType:'jsonp',
             jsonp:'callback',
             success:function(result) {
