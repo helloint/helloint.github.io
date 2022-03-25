@@ -154,7 +154,7 @@
     });
     $('#show-estates').click(function (e) {
         // 画小区区域图
-        drawEstate(names1);
+        drawEstate(estateNames);
     });
 
 
@@ -162,152 +162,46 @@
         // 画街道底图
         drawRegion(mhgmPoints);
 
-        Controller.init();
         renderUI();
-        // fsm.init();
+        fsm.init();
     });
 
     /*
     state:
-    0: stopped, show PLAY icon, can Play
+    0: idle, show PLAY icon, can Play
     1: playing, show PAUSE icon, can Pause or Stop
     2: paused, show PLAY icon, can Play or Stop
     3: ended, show STOP, can Stop
 
     action:
-    0 -> 1 start()  -> play(true)
-    1 -> 0 reset()  -> stop(true)
+    0 -> 1 start()
+    1 -> 0 stop()
     1 -> 2 pause()
-    1 -> 3 AUTO     -> stop()
-    2 -> 0 reset()  -> stop(true)
-    2 -> 1 resume() -> play()
-    3 -> 0 reset()  -> stop(true)
+    1 -> 3 end()
+    2 -> 0 stop()
+    2 -> 1 resume()
+    3 -> 0 stop()
+
+    Life Cycle: https://docs.google.com/drawings/d/1HaRGZbrjK5cXcStfa5X7bXMXGPOGkju6HIikOwpI7Cc/edit
      */
-    const Controller = {
-
-        // 当前状态
-        state: 0,
-
-        selector: document.getElementById('date-selector'),
-
-        // 定时器
-        iid: null,
-
-        init: function () {
-            $('#playBtn').click(function(){
-                Controller.start();
-            });
-            $('#pauseBtn').click(function(){
-                Controller.pause();
-            });
-            $('#resumeBtn').click(function(){
-                Controller.resume();
-            });
-            $('#stopBtn').click(function(){
-                Controller.reset();
-            });
-            this.setStatus(this.state);
-        },
-
-        setStatus: function(status) {
-            this.state = status;
-            switch(this.state) {
-                case 0:
-                    $('#playBtn').show();
-                    $('#pauseBtn').hide();
-                    $('#resumeBtn').hide();
-                    $('#stopBtn').hide();
-                    setHashParameter('playing', null);
-                    break;
-                case 1:
-                    $('#playBtn').hide();
-                    $('#pauseBtn').show();
-                    $('#resumeBtn').hide();
-                    $('#stopBtn').show();
-                    setHashParameter('playing', 1);
-                    break;
-                case 2:
-                    $('#playBtn').hide();
-                    $('#pauseBtn').hide();
-                    $('#resumeBtn').show();
-                    $('#stopBtn').show();
-                    break;
-                case 3:
-                    $('#playBtn').hide();
-                    $('#pauseBtn').hide();
-                    $('#resumeBtn').hide();
-                    $('#stopBtn').show();
-                    break;
-            }
-        },
-
-        play: function(reset = false) {
-            this.setStatus(1);
-            if (reset) {
-                map.clearOverlays();
-            }
-            // make selector readonly https://stackoverflow.com/a/368834/8175165
-            this.selector.disabled = true;
-            let index = this.selector.selectedIndex;
-            this.iid = setInterval(()=>{
-                index = index - 1;
-                if (index >= 0) {
-                    this.selector.selectedIndex = index;
-                    this.selector.dispatchEvent(new Event('change'));
-                } else {
-                    this.stop();
-                }
-            }, 500);
-        },
-
-        stop: function(reset = false) {
-            clearInterval(this.iid);
-            this.iid = null;
-            if (reset) {
-                this.setStatus(0);
-                map.clearOverlays();
-                this.selector.disabled = false;
-            } else {
-                this.setStatus(3);
-            }
-        },
-
-        start: function() {
-            this.play(true);
-        },
-
-        pause: function() {
-            clearInterval(this.iid);
-            this.iid = null;
-            this.setStatus(2);
-        },
-
-        resume: function() {
-            this.play();
-        },
-
-        reset: function() {
-            this.stop(true);
-        },
-    };
-
     var fsm = new StateMachine({
         transitions: [
-            {name: 'init', from: 'none', to: 'stopped'},
-            {name: 'play', from: 'stopped', to: 'playing'},
+            {name: 'init', from: 'none', to: 'idle'},
+            {name: 'start', from: 'idle', to: 'playing'},
             {name: 'pause', from: 'playing', to: 'paused'},
             {name: 'resume', from: 'paused', to: 'playing'},
             {name: 'end', from: 'playing', to: 'ended'},
-            {name: 'stop', from: ['playing', 'paused', 'ended'], to: 'stopped'},
+            {name: 'stop', from: ['playing', 'paused', 'ended'], to: 'idle'},
         ],
         data: {
-            $selectBox: $('#date-selector'),
+            selector: document.getElementById('date-selector'),
             iid: null,
         },
         methods: {
             onInit: function () {
+                // console.log('onInit');
                 $('#playBtn').click(function(){
-                    fsm.play();
+                    $(this)[0].fsm.start();
                 });
                 $('#pauseBtn').click(function(){
                     fsm.pause();
@@ -319,65 +213,69 @@
                     fsm.stop();
                 });
             },
-            onPlay: function () {
-                map.clearOverlays();
-
-                // TODO: merge with onResume()
-                // make selector readonly https://stackoverflow.com/a/368834/8175165
-                this.selector.disabled = true;
-                let index = this.selector.selectedIndex;
-                this.iid = setInterval(()=>{
-                    index = index - 1;
-                    if (index >= 0) {
-                        this.selector.selectedIndex = index;
-                        this.selector.dispatchEvent(new Event('change'));
-                    } else {
-                        this.stop();
-                    }
-                }, 500);
+            onIdle: function () {
+                // console.log('4. onIdle');
+                $('#playBtn').show();
+                $('#pauseBtn').hide();
+                $('#resumeBtn').hide();
+                $('#stopBtn').hide();
+                this.selector.disabled = false;
             },
-            onResume: function () {
+            onLeaveIdle: function () {
+                // console.log('onLeaveIdle');
                 // make selector readonly https://stackoverflow.com/a/368834/8175165
                 this.selector.disabled = true;
-                let index = this.selector.selectedIndex;
-                this.iid = setInterval(()=>{
-                    index = index - 1;
-                    if (index >= 0) {
-                        this.selector.selectedIndex = index;
-                        this.selector.dispatchEvent(new Event('change'));
-                    } else {
-                        this.stop();
-                    }
-                }, 500);
             },
             onPlaying: function () {
+                // console.log('onPlaying');
                 $('#playBtn').hide();
                 $('#pauseBtn').show();
                 $('#resumeBtn').hide();
                 $('#stopBtn').show();
+
+                // For resume and play
+                let index = this.selector.selectedIndex;
+                this.iid = setInterval(()=>{
+                    index = index - 1;
+                    if (index >= 0) {
+                        this.selector.selectedIndex = index;
+                        this.selector.dispatchEvent(new Event('change'));
+                    } else {
+                        fsm.end();
+                    }
+                }, 500);
                 setHashParameter('playing', 1);
             },
             onPause: function () {
+                // console.log('onPause');
                 clearInterval(this.iid);
                 this.iid = null;
             },
             onPaused: function () {
+                // console.log('onPaused');
                 $('#playBtn').hide();
                 $('#pauseBtn').hide();
                 $('#resumeBtn').show();
                 $('#stopBtn').show();
             },
+            onEnd: function () {
+                // console.log('onEnd');
+                clearInterval(this.iid);
+                this.iid = null;
+            },
             onEnded: function () {
+                // console.log('onEnded');
                 $('#playBtn').hide();
                 $('#pauseBtn').hide();
                 $('#resumeBtn').hide();
                 $('#stopBtn').show();
             },
-            onStopped: function () {
-                $('#playBtn').show();
-                $('#pauseBtn').hide();
-                $('#resumeBtn').hide();
-                $('#stopBtn').hide();
+            onStop: function () {
+                // FIXME: The real order doesn't match the document, `onStop` fired after `onIdle` and `onAfterStop`, looks like a bug
+                console.log('onStop');
+                this.iid && clearInterval(this.iid);
+                this.iid = null;
+                map.clearOverlays();
                 setHashParameter('playing', null);
             },
         }
@@ -396,7 +294,7 @@
     }
 
     function renderData(date, data) {
-        drawPoints(data, Controller.state === 0);
+        drawPoints(data, fsm.is('idle'));
         document.getElementById('title').innerText = date;
     }
 

@@ -9,23 +9,13 @@ from lxml import etree
 headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36"}
 
 '''
-这波疫情是从3/1开始的.
-3/1:
-    1,1
-    http://wsjkw.sh.gov.cn/xwfb/20220302/e0c9d63937ed4cfba163c3c97ae05e1d.html
+这波疫情是从3/1开始的， 但3/6之前的报告里没有公布地址。
+0301 (1/1)  http://wsjkw.sh.gov.cn/xwfb/20220302/e0c9d63937ed4cfba163c3c97ae05e1d.html
     该病例，女，56岁，本市户籍， 2月28日因发热等症状前往医院发热门诊就诊，新冠病毒核酸检测结果异常。
-3/2:
-    3,5
-    http://wsjkw.sh.gov.cn/xwfb/20220303/c44474f0577a4e829896aadf668045b7.html
-3/3:
-    2,14
-    http://wsjkw.sh.gov.cn/xwfb/20220304/164e0c9e7efe41fd91d6eb9e10967cdb.html
-3/4:
-    3,16
-    http://wsjkw.sh.gov.cn/xwfb/20220305/1fd23e48cc4f479ea8fc56c9e1052759.html
-3/5
-    0,28
-    http://wsjkw.sh.gov.cn/xwfb/20220306/ce44bea5ad8e41bf85165cdf35c84bdb.html
+0302 (3/5)  http://wsjkw.sh.gov.cn/xwfb/20220303/c44474f0577a4e829896aadf668045b7.html
+0303 (2/14) http://wsjkw.sh.gov.cn/xwfb/20220304/164e0c9e7efe41fd91d6eb9e10967cdb.html
+0304 (3/16) http://wsjkw.sh.gov.cn/xwfb/20220305/1fd23e48cc4f479ea8fc56c9e1052759.html
+0305 (0/28) http://wsjkw.sh.gov.cn/xwfb/20220306/ce44bea5ad8e41bf85165cdf35c84bdb.html
 '''
 
 
