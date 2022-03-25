@@ -14,7 +14,7 @@
         #container {width: 100%; height: 100%; overflow: hidden;}
         #container .BMapLabel {display: none !important;}
         .show-maptip #container .BMapLabel {display: block !important;}
-        #title {z-index: 5; font-size: 22px; color: blue; background-color: #fff; position: fixed; top: 10px; left: 50%; transform: translate(-50%, 0);text-shadow: 2px 2px 4px #fff;border: 2px solid blue; border-radius: 4px; padding: 0px 4px;}
+        #title {display:none; z-index: 5; font-size: 22px; color: blue; background-color: #fff; position: fixed; top: 10px; left: 50%; transform: translate(-50%, 0);text-shadow: 2px 2px 4px #fff;border: 2px solid blue; border-radius: 4px; padding: 0px 4px;}
         #controller {position: fixed; bottom: 10px; right: 10px; z-index: 5; display: flex; flex-direction: row;}
         #stopBtn, #pauseBtn, #resumeBtn {display: none;}
         .controlBtn {cursor: pointer; margin-top: 6px; width: 30px; height: 30px; filter: invert(8%) sepia(100%) saturate(7356%) hue-rotate(248deg) brightness(99%) contrast(144%);}
@@ -128,8 +128,10 @@
         '121.3925678137649, 31.131997264593217',
     ];
     // 第一，二批解封小区
-    const estateNames = ["成亿家园","古美公寓","金领华庭","和嘉公寓","万源城御溪","华梅花苑","春意苑","古美三村","同济华城(一期)","同济华城(二期)","馨古美佳苑（公租房）","东兰路37弄小区","梅莲苑","万源城逸郡","华城花苑","合成、龙茗公寓","龙祥嘉园","平阳苑","仲义苑","春江锦庐","万源城一期","古美十村","阳光美景城-东区","东苑怡景园","万源城御境","九星苑","平阳三村","古美一村"];
-    // const estateNames = ["成亿家园"];
+    const names1 = ["成亿家园","古美公寓","金领华庭","和嘉公寓","万源城御溪","华梅花苑","春意苑","古美三村","同济华城(一期)","融创同济玫瑰公馆"];
+    const names2 = ["馨古美佳苑（公租房）","东兰路37弄小区","梅莲苑","万源城逸郡","华城花苑","合成、龙茗公寓","龙祥嘉园","平阳苑","仲义苑","春江锦庐","万源城一期","古美十村","阳光美景城-东区","东苑怡景园","万源城御境","九星苑","平阳三村","古美一村"];
+    const names3 = ["江南星城-纯翠江南","东苑半岛花园","金汇豪庭","东兰雅苑","欧风花都","阳光美景城(西区)","新时代景庭","东方御花园-北区","平阳四街坊","万源城朗郡","中友嘉园","东苑古龙城","康健丽都","古龙苑","古美四村"];
+    const estateNames = [...names1, ...names2, ...names3];
 
     const map = new BMapGL.Map('container');
     const mapGeo = new BMapGL.Geocoder();
@@ -152,8 +154,7 @@
     });
     $('#show-estates').click(function (e) {
         // 画小区区域图
-        drawEstate(estateNames);
-        $(this).hide();
+        drawEstate(names1);
     });
 
 
@@ -163,6 +164,7 @@
 
         Controller.init();
         renderUI();
+        // fsm.init();
     });
 
     /*
@@ -181,27 +183,6 @@
     2 -> 1 resume() -> play()
     3 -> 0 reset()  -> stop(true)
      */
-    var fsm = new StateMachine({
-        init: 'stopped',
-        transitions: [
-            { name: 'play',     from: 'stopped',    to: 'playing' },
-            { name: 'pause',    from: 'playing',    to: 'paused'  },
-            { name: 'resume',   from: 'paused',     to: 'playing' },
-            { name: 'end',      from: 'playing',    to: 'ended'   },
-            { name: 'stop',     from: 'playing',    to: 'stopped' },
-            { name: 'revert',    from: 'paused',     to: 'stopped' },
-            { name: 'reset',    from: 'ended',      to: 'stopped' }
-        ],
-        methods: {
-            onPlay:     function() { console.log('onPlay')      },
-            onPause:    function() { console.log('onPause')     },
-            onResume:   function() { console.log('onResume')    },
-            onEnd:      function() { console.log('onEnd')       },
-            onStop:     function() { console.log('onStop')      },
-            onRevert:   function() { console.log('onRevert')    },
-            onReset:    function() { console.log('onReset')     }
-        }
-    });
     const Controller = {
 
         // 当前状态
@@ -310,6 +291,98 @@
         },
     };
 
+    var fsm = new StateMachine({
+        transitions: [
+            {name: 'init', from: 'none', to: 'stopped'},
+            {name: 'play', from: 'stopped', to: 'playing'},
+            {name: 'pause', from: 'playing', to: 'paused'},
+            {name: 'resume', from: 'paused', to: 'playing'},
+            {name: 'end', from: 'playing', to: 'ended'},
+            {name: 'stop', from: ['playing', 'paused', 'ended'], to: 'stopped'},
+        ],
+        data: {
+            $selectBox: $('#date-selector'),
+            iid: null,
+        },
+        methods: {
+            onInit: function () {
+                $('#playBtn').click(function(){
+                    fsm.play();
+                });
+                $('#pauseBtn').click(function(){
+                    fsm.pause();
+                });
+                $('#resumeBtn').click(function(){
+                    fsm.resume();
+                });
+                $('#stopBtn').click(function(){
+                    fsm.stop();
+                });
+            },
+            onPlay: function () {
+                map.clearOverlays();
+
+                // TODO: merge with onResume()
+                // make selector readonly https://stackoverflow.com/a/368834/8175165
+                this.selector.disabled = true;
+                let index = this.selector.selectedIndex;
+                this.iid = setInterval(()=>{
+                    index = index - 1;
+                    if (index >= 0) {
+                        this.selector.selectedIndex = index;
+                        this.selector.dispatchEvent(new Event('change'));
+                    } else {
+                        this.stop();
+                    }
+                }, 500);
+            },
+            onResume: function () {
+                // make selector readonly https://stackoverflow.com/a/368834/8175165
+                this.selector.disabled = true;
+                let index = this.selector.selectedIndex;
+                this.iid = setInterval(()=>{
+                    index = index - 1;
+                    if (index >= 0) {
+                        this.selector.selectedIndex = index;
+                        this.selector.dispatchEvent(new Event('change'));
+                    } else {
+                        this.stop();
+                    }
+                }, 500);
+            },
+            onPlaying: function () {
+                $('#playBtn').hide();
+                $('#pauseBtn').show();
+                $('#resumeBtn').hide();
+                $('#stopBtn').show();
+                setHashParameter('playing', 1);
+            },
+            onPause: function () {
+                clearInterval(this.iid);
+                this.iid = null;
+            },
+            onPaused: function () {
+                $('#playBtn').hide();
+                $('#pauseBtn').hide();
+                $('#resumeBtn').show();
+                $('#stopBtn').show();
+            },
+            onEnded: function () {
+                $('#playBtn').hide();
+                $('#pauseBtn').hide();
+                $('#resumeBtn').hide();
+                $('#stopBtn').show();
+            },
+            onStopped: function () {
+                $('#playBtn').show();
+                $('#pauseBtn').hide();
+                $('#resumeBtn').hide();
+                $('#stopBtn').hide();
+                setHashParameter('playing', null);
+            },
+        }
+    });
+
     function renderUI() {
         var currentDate = getHashParameter("date");
         if (!currentDate) {
@@ -394,6 +467,7 @@
                 new BMapGL.Size(15, 15)
             ));
             var label = new BMapGL.Label(pois[0].title, {offset: new BMapGL.Size(pois[0].title.length * -5,-35)});
+            label.setStyle({border: 0});
             marker.setLabel(label);
             marker.disableMassClear();
             map.addOverlay(marker);
