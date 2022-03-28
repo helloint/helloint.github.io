@@ -17,7 +17,7 @@
         .center-top {position: fixed; top: 10px; left: 50%; transform: translate(-50%, 0);}
         .bottom-right {position: fixed; bottom: 10px; right: 10px;}
         .bottom-left {position: fixed; bottom: 10px; left: 10px;}
-        .page-title {display:none; z-index: 5; text-shadow: 2px 2px 4px #fff; border: 2px solid blue; border-radius: 4px; padding: 0px 4px;font-size: 22px; color: blue; background-color: #fff; }
+        .page-title {z-index: 5; text-shadow: 2px 2px 4px #fff; border: 2px solid blue; border-radius: 4px; padding: 0px 4px;font-size: 20px; color: blue; background-color: #fff; }
         .date-controller {z-index: 5; display: flex; flex-flow: column-reverse nowrap;}
         .date-controller .row {display: flex; flex-flow: row nowrap; justify-content: flex-end; align-items: center;}
         .date-controller .text {font-size: 16px; color: blue; text-shadow: 2px 2px 4px #fff; margin-right: 5px;}
@@ -26,7 +26,7 @@
         .date-controller .control-btn {cursor: pointer; width: 30px; height: 30px; filter: invert(8%) sepia(100%) saturate(7356%) hue-rotate(248deg) brightness(99%) contrast(144%);}
         .date-controller #stopBtn {display: none;}
         .view-controller {z-index: 100; display: flex; flex-direction: row;}
-        .view-controller .data-btn {font-size: 22px;}
+        .view-controller .data-btn {font-size: 22px; border-radius: 14px;}
     </style>
     <script>
         // Util Functions
@@ -90,6 +90,7 @@
         </script>
     </select>
     <div class="row">
+<!--        TODO: use lock/unlock icon-->
         <input type="checkbox" class="data-input" value="Dogs" id="keepData">
         <label class="text" for="keepData">保持</label>
         <img id="stopBtn" class="control-btn" src="stop.svg" />
@@ -97,7 +98,7 @@
     </div>
 </div>
 <div class="view-controller bottom-left">
-    <span><button id="showEstates" class="data-btn">解封</button></span>
+    <span><button id="showEstates" class="data-btn">卍</button></span>
 </div>
 <script>
     const mapCenter = [121.40003152077978, 31.152492021564836];
