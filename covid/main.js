@@ -149,7 +149,7 @@ async function getAddressFromWechat(url) {
         // console.log(`areaName: ${areaName}`);
         $(item).find('section section[data-autoskip="1"] p').each((index, addressItem) => {
             let address = $(addressItem).find('span').text();
-            if (address === '' || address.startsWith('2022年') || address.startsWith('已对相关居住地落实终末消毒措施')) {
+            if (!address.trim() || address.startsWith('2022年') || address.startsWith('已对相关居住地落实终末消毒措施')) {
                 return true;
             }
             /*
