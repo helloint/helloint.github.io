@@ -12,8 +12,6 @@
         body,html {width: 100%; height: 100%; padding: 0; margin: 0;}
         h1 {margin: 0;}
         .map-container {width: 100%; height: 100%; overflow: hidden;}
-        .map-container .BMapLabel {display: none !important;}
-        .show-maptip #container .BMapLabel {display: block !important;}
         .center-top {position: fixed; top: 10px; left: 50%; transform: translate(-50%, 0);}
         .bottom-right {position: fixed; bottom: 10px; right: 10px;}
         .bottom-left {position: fixed; bottom: 10px; left: 10px;}
@@ -152,11 +150,18 @@
     map.addEventListener('click', function (e) {
         console.log(`'${e.latlng.lng}, ${e.latlng.lat}',`);
     });
+
+    let prevZoom = null;
     map.addEventListener("zoomend", function () {
         // 根据缩放显示和隐藏文本
-        var currentZoom = this.getZoom();
-        console.log(`currentZoom: ${currentZoom}`);
-        document.body.className = currentZoom <= zoomToDisplayLabel ? '' : 'show-maptip';
+        var currZoom = this.getZoom();
+        console.log(`currentZoom: ${currZoom}`);
+        if (currZoom > zoomToDisplayLabel && prevZoom <= zoomToDisplayLabel) {
+            showHideMarkerLabel(true);
+        } else if (currZoom <= zoomToDisplayLabel && prevZoom > zoomToDisplayLabel) {
+            showHideMarkerLabel(false);
+        }
+        prevZoom = currZoom;
     });
     $(window).on('hashchange', function(e) {
         // Review: Better to monitor data flow not hash change
@@ -414,6 +419,21 @@
         return points;
     }
 
+    function showHideMarkerLabel(show) {
+        var allOverlay = map.getOverlays();
+        allOverlay.forEach(overlay => {
+            if (overlay instanceof BMapGL.Marker) {
+                var currLabel = overlay.getLabel();
+                if (currLabel) {
+                    if (show) {
+                        currLabel.show();
+                    } else {
+                        currLabel.hide();
+                    }
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>
